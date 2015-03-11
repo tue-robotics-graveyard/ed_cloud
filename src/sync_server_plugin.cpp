@@ -4,7 +4,7 @@
 
 // ----------------------------------------------------------------------------------------------------
 
-void shapeToMsg(const geo::Shape& shape, ed::Mesh& msg)
+void shapeToMsg(const geo::Shape& shape, ed_cloud::Mesh& msg)
 {
     const geo::Mesh& mesh = shape.getMesh();
 
@@ -27,7 +27,7 @@ void shapeToMsg(const geo::Shape& shape, ed::Mesh& msg)
 
 // ----------------------------------------------------------------------------------------------------
 
-void polygonToMsg(const ed::ConvexHull2D& ch, ed::Polygon& msg)
+void polygonToMsg(const ed::ConvexHull2D& ch, ed_cloud::Polygon& msg)
 {
     msg.z_min = ch.min_z;
     msg.z_max = ch.max_z;
@@ -44,7 +44,7 @@ void polygonToMsg(const ed::ConvexHull2D& ch, ed::Polygon& msg)
 
 // ----------------------------------------------------------------------------------------------------
 
-void entityToMsg(const ed::Entity& e, ed::EntityUpdateInfo& msg)
+void entityToMsg(const ed::Entity& e, ed_cloud::EntityUpdateInfo& msg)
 {
     // id
     msg.id = e.id().str();
@@ -93,7 +93,7 @@ SyncServer::~SyncServer()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool SyncServer::GetWorldModel(ed::GetWorldModel::Request &req, ed::GetWorldModel::Response &res)
+bool SyncServer::GetWorldModel(ed_cloud::GetWorldModel::Request &req, ed_cloud::GetWorldModel::Response &res)
 {
     ROS_INFO_STREAM("Queried revision " << req.rev_number
                     << " , " << "Current rev number = "
@@ -119,8 +119,8 @@ bool SyncServer::GetWorldModel(ed::GetWorldModel::Request &req, ed::GetWorldMode
                 const ed::EntityConstPtr& e = world_->entities()[i];
                 if (req.rev_number < entity_server_revisions_[i])
                 {
-                    res.world.update_entities.push_back(ed::EntityUpdateInfo());
-                    ed::EntityUpdateInfo& info = res.world.update_entities.back();
+                    res.world.update_entities.push_back(ed_cloud::EntityUpdateInfo());
+                    ed_cloud::EntityUpdateInfo& info = res.world.update_entities.back();
                     info.index = i;
 
                     if (e)
@@ -162,7 +162,7 @@ void SyncServer::initialize()
     ROS_INFO("Advertising 'get_world' service");
 
     ros::AdvertiseServiceOptions get_world_model =
-            ros::AdvertiseServiceOptions::create<ed::GetWorldModel>(
+            ros::AdvertiseServiceOptions::create<ed_cloud::GetWorldModel>(
                 "/ed/get_world", boost::bind(&SyncServer::GetWorldModel, this, _1, _2),
                 ros::VoidPtr(), &cb_queue_);
     srv_get_world_ = nh.advertiseService(get_world_model);
@@ -217,8 +217,8 @@ void SyncServer::updateRequestCallback(const ed::UpdateRequest &req)
 
 // ----------------------------------------------------------------------------------------------------
 
-ed::EntityUpdateInfo& SyncServer::addOrGetEntityUpdate(
-        const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed::WorldModelDelta& delta)
+ed_cloud::EntityUpdateInfo& SyncServer::addOrGetEntityUpdate(
+        const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed_cloud::WorldModelDelta& delta)
 {
     std::map<std::string, unsigned int>::const_iterator it = ids.find(id.str());
     if (it != ids.end())
@@ -228,10 +228,10 @@ ed::EntityUpdateInfo& SyncServer::addOrGetEntityUpdate(
     ids[id.str()] = delta.update_entities.size();
 
     // Add a fresh new entity update
-    delta.update_entities.push_back(ed::EntityUpdateInfo());
+    delta.update_entities.push_back(ed_cloud::EntityUpdateInfo());
 
     // Get a reference to the new entity update
-    ed::EntityUpdateInfo& new_info = delta.update_entities.back();
+    ed_cloud::EntityUpdateInfo& new_info = delta.update_entities.back();
 
     // Set id
     new_info.id = id.str();
@@ -253,7 +253,7 @@ void SyncServer::createNewDelta()
 {
     current_rev_number++;
 
-    ed::WorldModelDelta new_delta;
+    ed_cloud::WorldModelDelta new_delta;
     std::map<std::string, unsigned int> updated_ids;
 
     using_delta_ = true;
@@ -262,7 +262,7 @@ void SyncServer::createNewDelta()
     // Types
     for (std::map<ed::UUID, std::string>::const_iterator it = delta.types.begin(); it != delta.types.end(); it ++)
     {
-        ed::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
+        ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
         info.new_type = true;
         info.type = it->second;
     }
@@ -270,7 +270,7 @@ void SyncServer::createNewDelta()
     // Poses
     for (std::map<ed::UUID, geo::Pose3D>::const_iterator it = delta.poses.begin(); it != delta.poses.end(); it ++)
     {
-        ed::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
+        ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
         info.new_pose = true;
         geo::convert(it->second, info.pose);
     }
@@ -278,7 +278,7 @@ void SyncServer::createNewDelta()
     // Shapes
     for (std::map<ed::UUID, geo::ShapeConstPtr>::const_iterator it = delta.shapes.begin(); it != delta.shapes.end(); it ++)
     {
-        ed::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
+        ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
         info.new_shape_or_convex = true;
         info.is_convex_hull = false;
         shapeToMsg(*it->second, info.mesh);
@@ -287,7 +287,7 @@ void SyncServer::createNewDelta()
     // Convex hulls
     for (std::map<ed::UUID, ed::ConvexHull2D>::const_iterator it = delta.convex_hulls.begin(); it != delta.convex_hulls.end(); it ++)
     {
-        ed::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
+        ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, new_delta);
         info.new_shape_or_convex = true;
         info.is_convex_hull = true;
         polygonToMsg(it->second, info.polygon);
@@ -342,9 +342,9 @@ void SyncServer::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
 // ----------------------------------------------------------------------------------------------------
 
-ed::WorldModelDelta SyncServer::combineDeltas(int rev_number)
+ed_cloud::WorldModelDelta SyncServer::combineDeltas(int rev_number)
 {
-    ed::WorldModelDelta res_delta;
+    ed_cloud::WorldModelDelta res_delta;
 
     // maps entity ids to index in the delta
     std::map<std::string, unsigned int> res_delta_indices;
@@ -354,9 +354,9 @@ ed::WorldModelDelta SyncServer::combineDeltas(int rev_number)
     // Merge information starting with the latest delta
     for (int i = this->current_rev_number - 1; i >= rev_number; i--)
     {
-        const ed::WorldModelDelta& delta = deltaModels[(i + deltaModels.size() + i_delta_models_start_ - current_rev_number) % max_num_delta_models_];
+        const ed_cloud::WorldModelDelta& delta = deltaModels[(i + deltaModels.size() + i_delta_models_start_ - current_rev_number) % max_num_delta_models_];
 
-        for (std::vector<ed::EntityUpdateInfo>::const_iterator it = delta.update_entities.begin(); it != delta.update_entities.end(); it++)
+        for (std::vector<ed_cloud::EntityUpdateInfo>::const_iterator it = delta.update_entities.begin(); it != delta.update_entities.end(); it++)
         {
             if (removed_entities_res_delta.find(it->id) != removed_entities_res_delta.end())
                 // Entity was removed in later delta, so skip
@@ -371,7 +371,7 @@ ed::WorldModelDelta SyncServer::combineDeltas(int rev_number)
             }
             else
             {
-                ed::EntityUpdateInfo& info = res_delta.update_entities[it_idx->second];
+                ed_cloud::EntityUpdateInfo& info = res_delta.update_entities[it_idx->second];
 
                 if (!info.new_pose && it->new_pose)
                 {

@@ -1,17 +1,17 @@
 #include "sync_client_plugin.h"
 
-#include <ed/WorldModelDelta.h>
-#include <ed/EntityUpdateInfo.h>
-#include <ed/GetWorldModel.h>
 #include <ed/update_request.h>
 #include <ed/entity.h>
 #include <ed/world_model.h>
-#include <ed/Polygon.h>
-#include <ed/Mesh.h>
 #include <geolib/ros/msg_conversions.h>
 #include <geolib/Mesh.h>
 #include <geolib/Shape.h>
 #include "ros/ros.h"
+
+#include "ed_cloud/EntityUpdateInfo.h"
+#include "ed_cloud/GetWorldModel.h"
+#include "ed_cloud/Polygon.h"
+#include "ed_cloud/Mesh.h"
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -44,8 +44,8 @@ void SyncClient::initialize()
 void SyncClient::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
     ros::NodeHandle n;
-    ed::GetWorldModel srv;
-    ros::ServiceClient client = n.serviceClient<ed::GetWorldModel>("get_world_model");
+    ed_cloud::GetWorldModel srv;
+    ros::ServiceClient client = n.serviceClient<ed_cloud::GetWorldModel>("get_world_model");
 
     srv.request.rev_number = this->current_rev_number;
 
@@ -59,12 +59,12 @@ void SyncClient::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
 // ----------------------------------------------------------------------------------------------------
 
-void SyncClient::updateWithDelta(ed::WorldModelDelta& a,
+void SyncClient::updateWithDelta(ed_cloud::WorldModelDelta& a,
                                         const ed::WorldModel &world,
                                         ed::UpdateRequest &req)
 {
 
-    for (std::vector<ed::EntityUpdateInfo>::const_iterator it = a.update_entities.begin();
+    for (std::vector<ed_cloud::EntityUpdateInfo>::const_iterator it = a.update_entities.begin();
         it != a.update_entities.end(); it++) {
 
         req.setType(it->id, it->type);

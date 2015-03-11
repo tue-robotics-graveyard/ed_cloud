@@ -3,7 +3,8 @@
 
 #include <ros/callback_queue.h>
 #include <ed/plugin.h>
-#include <ed/WorldModelDelta.h>
+
+#include "ed_cloud/WorldModelDelta.h"
 
 class SyncClient : public ed::Plugin
 {
@@ -18,7 +19,7 @@ public:
 
     void initialize();
 
-    void updateWithDelta(ed::WorldModelDelta& a, const ed::WorldModel &world, ed::UpdateRequest &req);
+    void updateWithDelta(ed_cloud::WorldModelDelta& a, const ed::WorldModel &world, ed::UpdateRequest &req);
 
     void process(const ed::WorldModel& world, ed::UpdateRequest& req);
 

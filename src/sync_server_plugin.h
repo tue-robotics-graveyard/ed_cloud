@@ -2,28 +2,29 @@
 #define WORLD_UPDATE_SERVER_PLUGIN_H
 
 #include <ed/plugin.h>
-#include <ed/WorldModelDelta.h>
 #include <ed/world_model.h>
 #include <ed/update_request.h>
 #include <map>
 #include <iterator>
 #include <ed/uuid.h>
-#include <ed/WorldModelDelta.h>
-#include <ed/EntityUpdateInfo.h>
 #include <geolib/ros/msg_conversions.h>
 #include <geolib/Shape.h>
 #include <geolib/Mesh.h>
 #include <geolib/datatypes.h>
-#include <ed/GetWorldModel.h>
 #include <ros/ros.h>
 #include <ros/callback_queue.h>
+
+#include "ed_cloud/WorldModelDelta.h"
+#include "ed_cloud/WorldModelDelta.h"
+#include "ed_cloud/EntityUpdateInfo.h"
+#include "ed_cloud/GetWorldModel.h"
 
 class SyncServer : public ed::Plugin
 {
 public:
     SyncServer();
 
-    bool GetWorldModel(ed::GetWorldModel::Request &req, ed::GetWorldModel::Response &res);
+    bool GetWorldModel(ed_cloud::GetWorldModel::Request &req, ed_cloud::GetWorldModel::Response &res);
 
     virtual ~SyncServer();
 
@@ -37,7 +38,7 @@ public:
 
     void process(const ed::WorldModel& world, ed::UpdateRequest& req);
 
-    ed::WorldModelDelta combineDeltas(int rev_number);
+    ed_cloud::WorldModelDelta combineDeltas(int rev_number);
 
 private:
 
@@ -61,7 +62,7 @@ private:
     bool using_delta_;
 
     // deltaModels is a circular buffer containing world model updates
-    std::vector<ed::WorldModelDelta> deltaModels;
+    std::vector<ed_cloud::WorldModelDelta> deltaModels;
 
     // i_delta_models_start_ stores the index to the *earliest* delta in the buffer
     unsigned int i_delta_models_start_;
@@ -81,7 +82,7 @@ private:
     // was last changed in revision 5.
     std::vector<unsigned int> entity_server_revisions_;
 
-    ed::EntityUpdateInfo& addOrGetEntityUpdate(const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed::WorldModelDelta& delta);
+    ed_cloud::EntityUpdateInfo& addOrGetEntityUpdate(const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed_cloud::WorldModelDelta& delta);
 };
 
 #endif // WORLD_UPDATE_SERVER_PLUGIN_H
