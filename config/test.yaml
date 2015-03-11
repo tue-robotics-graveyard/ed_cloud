@@ -1,0 +1,5 @@
+world_name: robotics_testlabs
+
+plugins:
+- name: sync_server_plugin
+  lib: libed_sync_server_plugin.so
