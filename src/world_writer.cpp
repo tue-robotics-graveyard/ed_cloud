@@ -7,11 +7,16 @@ void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, std::ost
 {
     output << "{";
     output << "\"revision\":\"" << rev_number << "\",";
+    output << "\"entities\":";
     output << "[";
 
 
     for (std::vector<ed::EntityConstPtr>::const_iterator it = world.entities().begin();
          it != world.entities().end(); it ++) {
+
+        if (it != world.entities().begin()) {
+            output << ",";
+        }
 
         output << "{";
         output << "\"id\":\"" << (*it)->id() << "\"" << ",";
@@ -20,4 +25,5 @@ void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, std::ost
     }
 
     output << "]";
+    output << "}";
 }
