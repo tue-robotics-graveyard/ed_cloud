@@ -6,6 +6,8 @@
 
 #include "ed_cloud/WorldModelDelta.h"
 
+#include "ros/service_client.h"
+
 class SyncClient : public ed::Plugin
 {
 
@@ -26,6 +28,9 @@ public:
 private:
 
     int current_rev_number;
+
+    ros::ServiceClient client;
+
 };
 
 #endif // WORLD_UPDATE_CLIENT_PLUGIN_H

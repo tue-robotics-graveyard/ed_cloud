@@ -6,12 +6,13 @@
 #include <geolib/ros/msg_conversions.h>
 #include <geolib/Mesh.h>
 #include <geolib/Shape.h>
-#include "ros/ros.h"
 
 #include "ed_cloud/EntityUpdateInfo.h"
 #include "ed_cloud/GetWorldModel.h"
 #include "ed_cloud/Polygon.h"
 #include "ed_cloud/Mesh.h"
+
+#include <ros/node_handle.h>
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -37,15 +38,16 @@ void SyncClient::configure(tue::Configuration config)
 void SyncClient::initialize()
 {
     current_rev_number = 0;
+
+    ros::NodeHandle n;
+    client = n.serviceClient<ed_cloud::GetWorldModel>("/ed/get_world");
 }
 
 // ----------------------------------------------------------------------------------------------------
 
 void SyncClient::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
-    ros::NodeHandle n;
     ed_cloud::GetWorldModel srv;
-    ros::ServiceClient client = n.serviceClient<ed_cloud::GetWorldModel>("get_world_model");
 
     srv.request.rev_number = this->current_rev_number;
 
