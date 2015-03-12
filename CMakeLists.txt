@@ -51,10 +51,13 @@ include_directories(
 	${catkin_INCLUDE_DIRS}
 )
 
+add_library(ed_world_writer src/world_writer.cpp)
 add_library(ed_sync_server_plugin src/sync_server_plugin.cpp)
 add_library(ed_sync_client_plugin src/sync_client_plugin.cpp)
 add_dependencies(ed_sync_server_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
 add_dependencies(ed_sync_client_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
+target_link_libraries(ed_sync_server_plugin ed_world_writer)
+target_link_libraries(ed_sync_client_plugin ed_world_writer)
 
 # ------------------------------------------------------------------------------------------------
 #                                              TEST

@@ -14,8 +14,8 @@ void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, std::ost
          it != world.entities().end(); it ++) {
 
         output << "{";
-        output << "\"id\":\"" << it->id() << "\"" << ",";
-        output << "\"type\":\"" << it->type() << "\"" << ",";
+        output << "\"id\":\"" << (*it)->id() << "\"" << ",";
+        output << "\"type\":\"" << (*it)->type() << "\"" << ",";
         output << "}";
     }
 
