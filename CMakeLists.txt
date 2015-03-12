@@ -56,4 +56,10 @@ add_library(ed_sync_client_plugin src/sync_client_plugin.cpp)
 add_dependencies(ed_sync_server_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
 add_dependencies(ed_sync_client_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
 
+# ------------------------------------------------------------------------------------------------
+#                                              TEST
+# ------------------------------------------------------------------------------------------------
+
+add_library(ed_bouncing_cubes test/bouncing_cubes.cpp)
+target_link_libraries(ed_bouncing_cubes ${catkin_LIBRARIES})
 
