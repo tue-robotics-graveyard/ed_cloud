@@ -308,6 +308,8 @@ void SyncServer::createNewDelta()
         entity_server_revisions_[entity_idx] = current_rev_number;
     }
 
+    latest_delta_[i_latest_delta_] = ed::UpdateRequest();
+    has_new_delta[i_latest_delta_] = false;
     using_delta_ = false;
 
     if (deltaModels.size() < max_num_delta_models_)
@@ -321,8 +323,6 @@ void SyncServer::createNewDelta()
         deltaModels[i_delta_models_start_] = new_delta;
         i_delta_models_start_ = (i_delta_models_start_ + 1) % max_num_delta_models_;
     }
-
-    has_new_delta[i_latest_delta_] = false;
 
     ROS_INFO("New Delta Created");
 }
