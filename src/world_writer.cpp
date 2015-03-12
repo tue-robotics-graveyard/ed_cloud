@@ -20,7 +20,7 @@ void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, std::ost
 
         output << "{";
         output << "\"id\":\"" << (*it)->id() << "\"" << ",";
-        output << "\"type\":\"" << (*it)->type() << "\"" << ",";
+        output << "\"type\":\"" << (*it)->type() << "\"";
         output << "}";
     }
 
