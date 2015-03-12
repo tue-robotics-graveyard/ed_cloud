@@ -63,7 +63,6 @@ void SyncClient::updateWithDelta(ed_cloud::WorldModelDelta& a,
                                         const ed::WorldModel &world,
                                         ed::UpdateRequest &req)
 {
-
     for (std::vector<ed_cloud::EntityUpdateInfo>::const_iterator it = a.update_entities.begin();
         it != a.update_entities.end(); it++) {
 
