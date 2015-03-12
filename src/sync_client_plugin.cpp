@@ -11,8 +11,11 @@
 #include "ed_cloud/GetWorldModel.h"
 #include "ed_cloud/Polygon.h"
 #include "ed_cloud/Mesh.h"
+#include "world_writer.h"
 
 #include <ros/node_handle.h>
+#include <fstream>
+#include <sstream>
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -54,6 +57,16 @@ void SyncClient::process(const ed::WorldModel &world, ed::UpdateRequest &req)
     if (client.call(srv)) {
             updateWithDelta(srv.response.world, world, req);
             this->current_rev_number = srv.response.rev_number;
+            if (this->current_rev_number == 100) {
+                std::string fileName;
+                ROS_INFO("Writing file");
+                fileName += "output-client-";
+                fileName += this->current_rev_number;
+                fileName += ".json";
+                std::ofstream ofile(fileName.c_str());
+                ed_cloud::world_write(world, this->current_rev_number, ofile);
+                ofile.close();
+            }
     } else {
         ROS_WARN("Cannot obtain world model updates from the server");
     }
