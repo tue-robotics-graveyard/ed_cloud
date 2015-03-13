@@ -338,13 +338,13 @@ void SyncServer::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
     if (has_new_delta[i_latest_delta_] && max_num_delta_models_ > 0) {
         this->createNewDelta();
-        if (this->current_rev_number == 100) {
-            std::string fileName;
+        if (this->current_rev_number >= 98 && this->current_rev_number <= 102) {
+            std::stringstream fileName;
             ROS_INFO("Writing file");
-            fileName += "output-server-";
-            fileName += this->current_rev_number;
-            fileName += ".json";
-            std::ofstream ofile(fileName.c_str());
+            fileName << "output-server-";
+            fileName << this->current_rev_number;
+            fileName << ".json";
+            std::ofstream ofile(fileName.str().c_str());
             ed_cloud::world_write(world, this->current_rev_number, ofile);
             ofile.close();
         }
