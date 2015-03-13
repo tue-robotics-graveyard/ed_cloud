@@ -50,23 +50,25 @@ void SyncClient::initialize()
 
 void SyncClient::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
+    if (this->current_rev_number >= 98 && this->current_rev_number <= 102)
+    {
+        std::stringstream fileName;
+        ROS_INFO("Writing file");
+        fileName << "output-client-";
+        fileName << this->current_rev_number;
+        fileName << ".json";
+        std::ofstream ofile(fileName.str().c_str());
+        ed_cloud::world_write(world, this->current_rev_number, ofile);
+        ofile.close();
+    }
+
     ed_cloud::GetWorldModel srv;
 
     srv.request.rev_number = this->current_rev_number;
 
     if (client.call(srv)) {
-            updateWithDelta(srv.response.world, world, req);
-            this->current_rev_number = srv.response.rev_number;
-            if (this->current_rev_number >= 98 && this->current_rev_number <= 102) {
-                std::stringstream fileName;
-                ROS_INFO("Writing file");
-                fileName << "output-client-";
-                fileName << this->current_rev_number;
-                fileName << ".json";
-                std::ofstream ofile(fileName.str().c_str());
-                ed_cloud::world_write(world, this->current_rev_number, ofile);
-                ofile.close();
-            }
+        updateWithDelta(srv.response.world, world, req);
+        this->current_rev_number = srv.response.rev_number;
     } else {
         ROS_WARN("Cannot obtain world model updates from the server");
     }
