@@ -34,7 +34,7 @@ public:
 
     void updateRequestCallback(const ed::UpdateRequest& req);
 
-    void createNewDelta();
+   // void createNewDelta();
 
     void process(const ed::PluginInput& data, ed::UpdateRequest& req);
 
@@ -62,7 +62,7 @@ private:
     bool using_delta_;
 
     // deltaModels is a circular buffer containing world model updates
-    std::vector<ed_cloud::WorldModelDelta> deltaModels;
+    std::vector<ed::UpdateRequest> deltaModels;
 
     // i_delta_models_start_ stores the index to the *earliest* delta in the buffer
     unsigned int i_delta_models_start_;
