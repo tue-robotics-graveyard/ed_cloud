@@ -83,9 +83,6 @@ SyncServer::SyncServer()
 {
     current_rev_number = 0;
     i_delta_models_start_ = 0;
-    i_latest_delta_ = 0;
-
-    using_delta_ = false;
 
     max_num_delta_models_ = 10;
 }
@@ -159,9 +156,6 @@ void SyncServer::initialize()
 {
     ros::NodeHandle nh;
 
-    has_new_delta[0] = false;
-    has_new_delta[1] = false;
-
     current_rev_number = 0;
 
     ROS_INFO("Advertising 'get_world' service");
@@ -175,9 +169,8 @@ void SyncServer::initialize()
 
 // ----------------------------------------------------------------------------------------------------
 
-void SyncServer::updateRequestCallback(const ed::UpdateRequest &req)
+void SyncServer::addDelta(const ed::UpdateRequest &req)
 {
-
     current_rev_number++;
 
     if (deltaModels.size() < max_num_delta_models_)
@@ -192,6 +185,17 @@ void SyncServer::updateRequestCallback(const ed::UpdateRequest &req)
         i_delta_models_start_ = (i_delta_models_start_ + 1) % max_num_delta_models_;
     }
 
+    for(std::set<ed::UUID>::const_iterator it = req.updated_entities.begin(); it != req.updated_entities.end(); ++it)
+    {
+        const ed::UUID& id = *it;
+        ed::Idx idx;
+        if (world_->findEntityIdx(id, idx))
+        {
+            for(ed::Idx i = entity_server_revisions_.size(); i < idx + 1; ++i)
+                entity_server_revisions_.push_back(0);
+            entity_server_revisions_[idx] = current_rev_number;
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -233,7 +237,7 @@ void SyncServer::process(const ed::PluginInput& data, ed::UpdateRequest &req)
     world_ = &data.world;
 
     for(unsigned int i = 0; i < data.deltas.size(); ++i)
-        this->updateRequestCallback(*data.deltas[i]);
+        this->addDelta(*data.deltas[i]);
 
     if (this->current_rev_number >= 98 && this->current_rev_number <= 102)
     {

@@ -32,7 +32,7 @@ public:
 
     void initialize();
 
-    void updateRequestCallback(const ed::UpdateRequest& req);
+    void addDelta(const ed::UpdateRequest& req);
 
    // void createNewDelta();
 
@@ -41,25 +41,6 @@ public:
     ed_cloud::WorldModelDelta combineDeltas(int rev_number);
 
 private:
-
-//    std::set<ed::UUID> modified_entities_current_delta;
-//    std::map<ed::UUID, geo::ShapeConstPtr> shapes_current_delta;
-//    std::map<ed::UUID, ed::ConvexHull2D> convex_hulls_current_delta;
-//    std::map<ed::UUID, std::string> types_current_delta;
-//    std::map<ed::UUID, geo::Pose3D> poses_current_delta;
-//    std::set<ed::UUID> removed_entities_current_delta;
-
-    // Contains the delta from the latest revision to the current world model state
-    // (which is not yet added to deltaModels). A double buffer is used because the
-    // delta is filled by a different thread than it is used.
-    ed::UpdateRequest latest_delta_[2];
-    bool has_new_delta[2];
-
-    // Index in the double buffer
-    int i_latest_delta_;
-
-    // Signals whether the delta is currently being read (and therefore should not be writter to)
-    bool using_delta_;
 
     // deltaModels is a circular buffer containing world model updates
     std::vector<ed::UpdateRequest> deltaModels;
