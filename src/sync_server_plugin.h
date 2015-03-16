@@ -36,7 +36,7 @@ public:
 
     void createNewDelta();
 
-    void process(const ed::WorldModel& world, ed::UpdateRequest& req);
+    void process(const ed::PluginInput& data, ed::UpdateRequest& req);
 
     ed_cloud::WorldModelDelta combineDeltas(int rev_number);
 

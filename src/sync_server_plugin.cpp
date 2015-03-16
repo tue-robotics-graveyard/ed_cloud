@@ -334,9 +334,12 @@ void SyncServer::createNewDelta()
 
 // ----------------------------------------------------------------------------------------------------
 
-void SyncServer::process(const ed::WorldModel &world, ed::UpdateRequest &req)
+void SyncServer::process(const ed::PluginInput& data, ed::UpdateRequest &req)
 {
-    world_ = &world;
+    world_ = &data.world;
+
+    for(unsigned int i = 0; i < data.deltas.size(); ++i)
+        this->updateRequestCallback(*data.deltas[i]);
 
     if (this->current_rev_number >= 98 && this->current_rev_number <= 102)
     {
@@ -347,7 +350,7 @@ void SyncServer::process(const ed::WorldModel &world, ed::UpdateRequest &req)
         fileName << ".json";
         std::ofstream ofile(fileName.str().c_str());
         ed::io::JSONWriter writer(ofile);
-        ed_cloud::world_write(world, this->current_rev_number, writer);
+        ed_cloud::world_write(data.world, this->current_rev_number, writer);
         ofile.close();
     }
 
