@@ -269,34 +269,46 @@ ed_cloud::WorldModelDelta SyncServer::combineDeltas(int rev_number)
         for (std::map<ed::UUID, std::string>::const_iterator it = delta.types.begin(); it != delta.types.end(); it ++)
         {
             ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            info.new_type = true;
-            info.type = it->second;
+            if (!info.new_type)
+            {
+                info.new_type = true;
+                info.type = it->second;
+            }
         }
 
         // Poses
         for (std::map<ed::UUID, geo::Pose3D>::const_iterator it = delta.poses.begin(); it != delta.poses.end(); it ++)
         {
             ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            info.new_pose = true;
-            geo::convert(it->second, info.pose);
+            if (!info.new_pose)
+            {
+                info.new_pose = true;
+                geo::convert(it->second, info.pose);
+            }
         }
 
         // Shapes
         for (std::map<ed::UUID, geo::ShapeConstPtr>::const_iterator it = delta.shapes.begin(); it != delta.shapes.end(); it ++)
         {
             ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            info.new_shape_or_convex = true;
-            info.is_convex_hull = false;
-            shapeToMsg(*it->second, info.mesh);
+            if (!info.new_shape_or_convex)
+            {
+                info.new_shape_or_convex = true;
+                info.is_convex_hull = false;
+                shapeToMsg(*it->second, info.mesh);
+            }
         }
 
         // Convex hulls
         for (std::map<ed::UUID, ed::ConvexHull2D>::const_iterator it = delta.convex_hulls.begin(); it != delta.convex_hulls.end(); it ++)
         {
             ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            info.new_shape_or_convex = true;
-            info.is_convex_hull = true;
-            polygonToMsg(it->second, info.polygon);
+            if (!info.new_shape_or_convex)
+            {
+                info.new_shape_or_convex = true;
+                info.is_convex_hull = true;
+                polygonToMsg(it->second, info.polygon);
+            }
         }
 
         // Removed entities
