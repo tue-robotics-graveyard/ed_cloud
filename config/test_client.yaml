@@ -3,3 +3,4 @@ world_name: robotics_testlabs
 plugins:
 - name: sync_client_plugin
   lib: libed_sync_client_plugin.so
+  frequency: 10

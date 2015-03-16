@@ -3,5 +3,7 @@ world_name: robotics_testlabs
 plugins:
 - name: sync_server_plugin
   lib: libed_sync_server_plugin.so
+  frequency: 10
 - name: bouncing_cubes
   lib: libed_bouncing_cubes.so
+  frequency: 10
