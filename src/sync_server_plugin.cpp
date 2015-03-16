@@ -5,6 +5,8 @@
 #include <sstream>
 #include "world_writer.h"
 
+#include <ed/io/json_writer.h>
+
 // ----------------------------------------------------------------------------------------------------
 
 void shapeToMsg(const geo::Shape& shape, ed_cloud::Mesh& msg)
@@ -344,7 +346,8 @@ void SyncServer::process(const ed::WorldModel &world, ed::UpdateRequest &req)
         fileName << this->current_rev_number;
         fileName << ".json";
         std::ofstream ofile(fileName.str().c_str());
-        ed_cloud::world_write(world, this->current_rev_number, ofile);
+        ed::io::JSONWriter writer(ofile);
+        ed_cloud::world_write(world, this->current_rev_number, writer);
         ofile.close();
     }
 
