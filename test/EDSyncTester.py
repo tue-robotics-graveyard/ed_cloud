@@ -92,7 +92,7 @@ class EDSyncTester:
                 for e in entity["shape"]["triangles"]]
                 for t in entity_triangles_server[entity["id"]]:
                     t.sort()
-                entity_triangles_server[entity["id"]]
+                entity_triangles_server[entity["id"]].sort()
 
 
         for entity in self.client_tree["entities"]:
