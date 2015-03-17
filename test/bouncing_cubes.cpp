@@ -6,6 +6,8 @@
 
 #include <sstream>
 
+#include <set>
+
 // ----------------------------------------------------------------------------------------------------
 
 BouncingCubes::BouncingCubes()
@@ -38,22 +40,43 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
     {
         // Initialize cubes
 
-        for(unsigned int i = 0; i < 1; ++i)
+        for(unsigned int i = 0; i < 10; ++i)
             {
 
-            Cube cube;
-            cube.pose = geo::Pose3D::identity();
-            cube.vel = geo::Vector3(0.2, 0.1, -0.05);
+                Cube cube;
+                cube.pose = geo::Pose3D::identity();
+                cube.vel = geo::Vector3(0.2, 0.1, -0.05);
 
-            std::stringstream ss_id;
-            ss_id << "cube-" << i;
+                std::stringstream ss_id;
+                ss_id << "cube-" << i;
 
-            cube.id = ss_id.str();
+                cube.id = ss_id.str();
 
-            cubes.push_back(cube);
+                cubes.push_back(cube);
 
-            // Set the shape
-            req.setShape(cube.id, geo::ShapePtr(new geo::Box(geo::Vector3(-0.25, -0.25, -0.25), geo::Vector3(0.25, 0.25, 0.25))));
+                // Set the shape
+                req.setShape(cube.id, geo::ShapePtr(new geo::Box(geo::Vector3(-0.25, -0.25, -0.25), geo::Vector3(0.25, 0.25, 0.25))));
+            }
+    } else {
+
+        // Random delete: added by javsalgar
+
+        for(std::vector<Cube>::iterator it = cubes.begin(); it != cubes.end(); ++it)
+        {
+            Cube& cube = *it;
+            std::set<ed::UUID>::iterator pos = removed_entities.find(cube.id);
+
+            int v1 = rand() % 100;
+            if (v1 > 70) {
+                if (pos == removed_entities.end()) {
+                    req.removeEntity(cube.id);
+                    removed_entities.insert(cube.id);
+                }
+            } else {
+                if (pos != removed_entities.end()) {
+                    removed_entities.erase(pos);
+                }
+            }
         }
     }
 
@@ -63,15 +86,33 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
         Cube& cube = *it;
         cube.pose.t += cube.vel;
 
-        // Check if cube reached boundary. If so, bounce
-        for(unsigned int d = 0; d < 3; ++d)
-        {
-            if (cube.pose.t.m[d] < -2 || cube.pose.t.m[d] > 2)
-                cube.vel.m[d] = -cube.vel.m[d];
-        }
+        if (removed_entities.find(cube.id) == removed_entities.end()) {
 
-        req.setPose(cube.id, cube.pose);
+            // Check if cube reached boundary. If so, bounce
+            for(unsigned int d = 0; d < 3; ++d)
+            {
+                if (cube.pose.t.m[d] < -2 || cube.pose.t.m[d] > 2)
+                    cube.vel.m[d] = -cube.vel.m[d];
+            }
+
+            req.setPose(cube.id, cube.pose);
+        }
     }
+
+    // Random change shape: added by javsalgar
+    for(std::vector<Cube>::iterator it = cubes.begin(); it != cubes.end(); ++it)
+    {
+        Cube& cube = *it;
+        if (removed_entities.find(cube.id) == removed_entities.end()) {
+            float new_shape_x = rand() / 100.0;
+            float new_shape_y = rand() / 100.0;
+            float new_shape_z = rand() / 100.0;
+
+            req.setShape(cube.id, geo::ShapePtr(new geo::Box(geo::Vector3(-new_shape_x, -new_shape_y, -new_shape_z),
+                                                             geo::Vector3(new_shape_x, new_shape_y, new_shape_z))));
+        }
+     }
+
 }
 
 // ----------------------------------------------------------------------------------------------------
