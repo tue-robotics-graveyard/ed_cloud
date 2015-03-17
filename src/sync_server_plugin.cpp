@@ -220,12 +220,14 @@ ed_cloud::EntityUpdateInfo& SyncServer::addOrGetEntityUpdate(
     new_info.id = id.str();
 
     // Find entity index
-    world_->findEntityIdx(new_info.id, new_info.index);
+    if (world_->findEntityIdx(new_info.id, new_info.index))
+    {
 
-    // Update entity server revision list
-    for(unsigned int i = entity_server_revisions_.size(); i < new_info.index + 1; ++i)
-        entity_server_revisions_.push_back(0);
-    entity_server_revisions_[new_info.index] = current_rev_number;
+        // Update entity server revision list
+        for(unsigned int i = entity_server_revisions_.size(); i < new_info.index + 1; ++i)
+            entity_server_revisions_.push_back(0);
+        entity_server_revisions_[new_info.index] = current_rev_number;
+    }
 
     return new_info;
 }

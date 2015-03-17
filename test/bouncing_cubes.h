@@ -34,7 +34,7 @@ private:
 
     std::vector<Cube> cubes;
     std::set<ed::UUID> removed_entities;
-
+    unsigned long newId;
 };
 
 #endif

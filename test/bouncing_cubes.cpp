@@ -38,6 +38,8 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
     if (cubes.empty())
     {
+
+        newId = 0;
         // Initialize cubes
 
         for(unsigned int i = 0; i < 10; ++i)
@@ -56,6 +58,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
                 // Set the shape
                 req.setShape(cube.id, geo::ShapePtr(new geo::Box(geo::Vector3(-0.25, -0.25, -0.25), geo::Vector3(0.25, 0.25, 0.25))));
+                newId++;
             }
     } else {
 
@@ -75,6 +78,10 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
             } else {
                 if (pos != removed_entities.end()) {
                     removed_entities.erase(pos);
+                    std::stringstream ss_id;
+                    ss_id << "cube-" << newId;
+                    cube.id = ss_id.str();
+                    newId++;
                 }
             }
         }

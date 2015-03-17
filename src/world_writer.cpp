@@ -60,8 +60,8 @@ void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, ed::io::
 
     w.writeArray("entities");
 
-    for (std::vector<ed::EntityConstPtr>::const_iterator it = world.entities().begin();
-         it != world.entities().end(); it ++)
+    for (ed::WorldModel::const_iterator it = world.begin();
+         it != world.end(); it ++)
     {
         w.addArrayItem();
         write_entity((*it), w);
