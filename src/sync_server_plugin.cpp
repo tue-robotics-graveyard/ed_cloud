@@ -241,18 +241,16 @@ void SyncServer::process(const ed::PluginInput& data, ed::UpdateRequest &req)
     for(unsigned int i = 0; i < data.deltas.size(); ++i)
         this->addDelta(*data.deltas[i]);
 
-    if (this->current_rev_number >= 98 && this->current_rev_number <= 102)
-    {
-        std::stringstream fileName;
-        ROS_INFO("Writing file");
-        fileName << "output-server-";
-        fileName << this->current_rev_number;
-        fileName << ".json";
-        std::ofstream ofile(fileName.str().c_str());
-        ed::io::JSONWriter writer(ofile);
-        ed_cloud::world_write(data.world, this->current_rev_number, writer);
-        ofile.close();
-    }
+    std::stringstream fileName;
+    ROS_INFO("Writing file");
+    fileName << "output-server-";
+    fileName << this->current_rev_number;
+    fileName << ".json";
+    std::ofstream ofile(fileName.str().c_str());
+    ed::io::JSONWriter writer(ofile);
+    ed_cloud::world_write(data.world, this->current_rev_number, writer);
+    ofile.close();
+
 
 
     this->cb_queue_.callAvailable();

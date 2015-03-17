@@ -120,7 +120,7 @@ class EDSyncTester:
         else:
             print("== Shape Triangles Test -> Failed ==")
 
-
+        return error
 
     def testShapesVertices(self):
         print("== Shape Vertices Test ==")
@@ -151,6 +151,9 @@ class EDSyncTester:
         else:
             print("== Shape Vertices Test -> Failed ==")
 
+
+        return error
+
     def testConvexHulls(self):
 
         print("== Convex Hull Test ==")
@@ -163,7 +166,7 @@ class EDSyncTester:
         for entity in self.server_tree["entities"]:
             if ("convex_hull" in entity):
                 entity_ch_server[entity["id"]] = [[(e["x"],e["y"]) for e in entity["convex_hull"]["points"]]]
-                entity_ch_client[entity["id"]].sort()
+                entity_ch_server[entity["id"]].sort()
 
         for entity in self.client_tree["entities"]:
             if ("convex_hull" in entity):
@@ -183,7 +186,7 @@ class EDSyncTester:
         else:
             print("== Convex Hull Test -> Failed ==")
 
-
+        return error
 
     def testTypes(self):
 
