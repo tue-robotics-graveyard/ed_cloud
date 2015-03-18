@@ -24,6 +24,7 @@ BouncingCubes::~BouncingCubes()
 
 void BouncingCubes::configure(tue::Configuration config)
 {
+    config.value("num_cubes", num_cubes_);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -42,7 +43,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
         newId = 0;
         // Initialize cubes
 
-        for(unsigned int i = 0; i < 10; ++i)
+        for(unsigned int i = 0; i < num_cubes_; ++i)
             {
 
                 Cube cube;

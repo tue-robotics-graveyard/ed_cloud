@@ -12,12 +12,19 @@ class EDSyncTester:
 
     server_tree = []
     client_tree = []
+    verbose = False
+
+    def verbosePrint(self, *args):
+        if (self.verbose == True):
+            for arg in args:
+               print (arg)
 
     def __init__(self):
         pass
 
-    def __init__(self, path_server_tree, path_client_tree):
-        self.parseTrees(path_server_tree, path_client_tree);
+    def __init__(self, path_server_tree, path_client_tree, verbose = False):
+        self.parseTrees(path_server_tree, path_client_tree)
+        self.verbose = verbose
 
     def parseTrees(self, path_server_tree, path_client_tree):
         server_tree_file = open(path_server_tree)
@@ -27,24 +34,58 @@ class EDSyncTester:
 
     def testRevNumber(self):
         error = False
-        print("== Begin Revision number test ==")
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Rev. Number Test]"+ " BEGIN")
 
         if (self.server_tree["revision"] != self.client_tree["revision"]):
-            print("[ERROR] Different revision numbers. Server: "
+            self.verbosePrint("[ERROR] Different revision numbers. Server: "
             + str(self.server_tree["revision"]) + " , Client: " +
             str(self.client_tree["revision"]))
             error = True
 
         if (error == False):
-            print("== Entity Number Test -> Success ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Rev. Number Test]"+ " SUCCESS")
         else:
-            print("== Entity Number Test -> Failed ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Rev. Number Test]"+ " FAILED")
 
         return error
 
+    def testPoses(self):
+        error = False
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Pose Test]"+ " BEGIN")
+
+        poses_server = dict()
+        poses_client = dict()
+
+        for entity in self.server_tree["entities"]:
+            poses_server[entity["id"]]  = entity["pose"]
+
+        for entity in self.client_tree["entities"]:
+            poses_client[entity["id"]] = entity["pose"]
+
+        for (id, pose) in poses_server.items():
+            if (id in poses_client and pose != poses_client[id]):
+                error = True
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Pose Test]" +
+                "[ERROR]: " + "Inconsistent poses in instance with id " + str(id) + ":")
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Pose Test]" +
+                "[ERROR]: " + "Pose in server: " + str(pose))
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Pose Test]" +
+                "[ERROR]: " + "Pose in server: " + str(poses_client[id]))
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Pose Test]" +
+                "[ERROR]: " + "Difference: " + str({key: pose[key] - poses_client[id].get(key, 0) for key in pose.keys()}))
+
+
+        if (error == False):
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Pose Test]"+ " SUCCESS")
+        else:
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Pose Test]"+ " FAILED")
+
+
+        return error;
+
     def testEntityNumber(self):
 
-        print("== Begin Entity Number Test ==")
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Entity Test]" + " BEGIN")
 
         error = False
         entities_in_server = Set([])
@@ -60,24 +101,27 @@ class EDSyncTester:
         dif_client = entities_in_client.difference(entities_in_server)
 
         if (len(dif_server) != 0):
-            print("[ERROR] These entities were not found in client: " + str(dif_server))
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Entity Test]" +
+            "[ERROR]: " +
+            "These entities were not found in client: " + str(dif_server))
 
             error = True
 
         if (len(dif_server) != 0):
-            print("[ERROR] These entities should not be in client: " + str(dif_client))
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Entity Test]"
+            +  "[ERROR]: " +"These entities should not be in client: " + str(dif_client))
             error = True
 
         if (error == False):
-            print("== Entity Number Test -> Success ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Entity Test]"+ " SUCCESS")
         else:
-            print("== Entity Number Test -> Failed ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Entity Test]"+ " FAILED")
 
         return error
 
 
     def testShapesTriangles(self):
-        print("== Shape Triangles Test ==")
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Triangle Test]"+ " BEGIN")
         error = False
 
         entity_triangles_server = dict()
@@ -109,21 +153,22 @@ class EDSyncTester:
         for (id, points) in entity_triangles_server.items():
             if (id in entity_triangles_client and
             points != entity_triangles_client[id]):
-                print("[ERROR] Inconsistent Triangles for instance id = " + str(id)
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Triangle Test]"+
+                "[ERROR] Inconsistent Triangles for instance id = " + str(id)
                 + ": " + str(points) + " != " + str(entity_triangles_client[id]))
                 error = True
 
 
 
         if (error == False):
-            print("== Shape Triangles Test -> Success ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Triangle Test]"+ " SUCCESS")
         else:
-            print("== Shape Triangles Test -> Failed ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Triangle Test]"+ " FAILED")
 
         return error
 
     def testShapesVertices(self):
-        print("== Shape Vertices Test ==")
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Vertices Test]"+ " BEGIN")
         error = False
 
         entity_vertices_server = dict()
@@ -142,21 +187,21 @@ class EDSyncTester:
         for (id, points) in entity_vertices_server.items():
             if (id in entity_vertices_client and
             points != entity_vertices_client[id]):
-                print("[ERROR] Inconsistent Vertices for instance id = " + str(id)
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Vertices Test]"+
+                "[ERROR] Inconsistent Vertices for instance id = " + str(id)
                 + ": " + str(points) + " != " + str(entity_vertices_client[id]))
                 error = True
 
         if (error == False):
-            print("== Shape Vertices Test -> Success ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Vertices Test]"+ " SUCCESS")
         else:
-            print("== Shape Vertices Test -> Failed ==")
-
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Shape Vertices Test]"+ " FAILED")
 
         return error
 
     def testConvexHulls(self):
 
-        print("== Convex Hull Test ==")
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Convex Hulls Test]"+ " BEGIN")
 
         entity_ch_server = dict()
         entity_ch_client = dict()
@@ -177,20 +222,23 @@ class EDSyncTester:
         for (id, points) in entity_ch_server.items():
             if (id in entity_ch_client and
             points != entity_ch_client[id]):
-                print("[ERROR] Inconsistent Convex Hulls for instance id = " + str(id)
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Convex Hulls Test]" +
+                "[ERROR] Inconsistent Convex Hulls for instance id = " + str(id)
                 + ": " + str(points) + " != " + str(entity_ch_client[id]))
                 error = True
 
+
         if (error == False):
-            print("== Convex Hull Test -> Success ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Convex Hulls Test]"+ " SUCCESS")
         else:
-            print("== Convex Hull Test -> Failed ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Convex Hulls Test]"+ " FAILED")
+
 
         return error
 
     def testTypes(self):
 
-        print("== Begin Entity Type Test ==")
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Types Test]"+ " BEGIN")
 
         error = False
 
@@ -205,12 +253,15 @@ class EDSyncTester:
 
         for (id, type) in entity_type_server.items():
             if id in entity_type_client and type != entity_type_client[id]:
-                print("[ERROR] Inconsistent type for instance id = " + str(id) +
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Types Test]"+
+                "[ERROR] Inconsistent type for instance id = " + str(id) +
                 ", " + "\"" + str(type) + "\"" + " != " + "\"" + str(entity_type_client[id] + "\""))
 
+
         if (error == False):
-            print("== Entity Type Test -> Success ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Types Test]"+ " SUCCESS")
         else:
-            print("== Entity Type Test -> Failed ==")
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Types Test]"+ " FAILED")
+
 
         return error
