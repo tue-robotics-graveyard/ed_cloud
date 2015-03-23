@@ -1,5 +1,5 @@
 string id
-uint32 index
+uint64 index
 
 bool new_type
 string type

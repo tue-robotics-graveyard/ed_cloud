@@ -1,11 +1,11 @@
 # Client revision number
-uint32 rev_number
+uint64 rev_number
 ---
 # World mode update (delta)
 WorldModelDelta world
 
 # New revision number
-uint32 rev_number
+uint64 rev_number
 
 # Error message. Is empty if no errors occurred
 string error
