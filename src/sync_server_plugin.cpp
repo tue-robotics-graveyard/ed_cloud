@@ -59,8 +59,15 @@ void entityToMsg(const ed::Entity& e, ed_cloud::EntityUpdateInfo& msg)
     msg.new_type = true;
 
     // pose
-    geo::convert(e.pose(), msg.pose);
-    msg.new_pose = true;
+    if (e.has_pose())
+    {
+        geo::convert(e.pose(), msg.pose);
+        msg.new_pose = true;
+    }
+    else
+    {
+        msg.new_pose = false;
+    }
 
     // shape
     if (e.shape())

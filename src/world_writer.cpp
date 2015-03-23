@@ -45,7 +45,8 @@ void ed_cloud::write_entity(const ed::EntityConstPtr& ent, ed::io::Writer& w)
     w.writeValue("id", ent->id().str());
     w.writeValue("type", ent->type());
 
-    write_pose(ent->pose(), w);
+    if (ent->has_pose())
+        write_pose(ent->pose(), w);
 
     if (ent->shape())
         write_shape(ent->shape()->getMesh(), w);
