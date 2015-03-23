@@ -45,7 +45,9 @@ for i in os.listdir(client_dir):
     file_name_client = str(i)
     m = re.match(".*-(\d+)\.json", file_name_client)
     file_name_server = pattern + "-server-" + str(m.group(1)) + ".json"
-    pbar.widgets[0] = FormatLabel('| Test {0}/{1} - Failed: {2} | '.format(num_files_tested, total_files, num_files_failed))
+
+    if args.verbose == False:	
+        pbar.widgets[0] = FormatLabel('| Test {0}/{1} - Failed: {2} | '.format(num_files_tested, total_files, num_files_failed))
 
     if (os.path.isfile(server_dir + file_name_server)):
         success = True

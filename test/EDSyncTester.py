@@ -63,7 +63,7 @@ class EDSyncTester:
             poses_client[entity["id"]] = entity["pose"]
 
         for (id, pose) in poses_server.items():
-            if (id in poses_client and pose != poses_client[id]):
+            if (id in poses_client and sum([abs(a - b) for (a,b) in zip(pose.values(), poses_client[id].values())]) > 1e-9):
                 error = True
                 self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Pose Test]" +
                 "[ERROR]: " + "Inconsistent poses in instance with id " + str(id) + ":")
@@ -99,6 +99,7 @@ class EDSyncTester:
 
         dif_server = entities_in_server.difference(entities_in_client)
         dif_client = entities_in_client.difference(entities_in_server)
+    
 
         if (len(dif_server) != 0):
             self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Entity Test]" +
@@ -107,7 +108,7 @@ class EDSyncTester:
 
             error = True
 
-        if (len(dif_server) != 0):
+        if (len(dif_client) != 0):
             self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]" + "[Entity Test]"
             +  "[ERROR]: " +"These entities should not be in client: " + str(dif_client))
             error = True
