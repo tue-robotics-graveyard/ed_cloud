@@ -83,12 +83,26 @@ void SyncClient::updateWithDelta(ed_cloud::WorldModelDelta& a,
     for (std::vector<ed_cloud::EntityUpdateInfo>::const_iterator it = a.update_entities.begin();
         it != a.update_entities.end(); it++) {
 
+        if (it->index < entity_index.size())
+        {
+            ed::UUID old_id = entity_index[it->index];
+            if (!old_id.str().empty() && old_id != it->id)
+            {
+                req.removeEntity(entity_index[it->index]);
+            }
+        } else {
+            entity_index.resize(it->index + 1, std::string());
+        }
+
+        entity_index[it->index] = it->id;
+        index_map[it->id] = it->index;
+
         req.setType(it->id, it->type);
 
         if (it->new_pose) {
             geo::Pose3D pose;
             geo::convert(it->pose, pose);
-            req.setPose(it->id, pose);
+                req.setPose(it->id, pose);
         }
 
         if (it->new_shape_or_convex) {
@@ -130,9 +144,14 @@ void SyncClient::updateWithDelta(ed_cloud::WorldModelDelta& a,
 
     for (std::vector<std::string>::const_iterator it = a.remove_entities.begin();
          it != a.remove_entities.end(); it++) {
-        req.removeEntity(*it);
+
+            std::map<ed::UUID, long>::iterator pos = index_map.find(*it);
+            if (pos != index_map.end()) {
+                req.removeEntity(*it);
+                index_map.erase(pos);
+                entity_index[index_map[*it]] = std::string();
+            }
     }
 }
-
 
 ED_REGISTER_PLUGIN(SyncClient)

@@ -31,6 +31,10 @@ private:
 
     ros::ServiceClient client;
 
+    std::vector<ed::UUID> entity_index;
+
+    std::map<ed::UUID, int64_t> index_map;
+
 };
 
 #endif // WORLD_UPDATE_CLIENT_PLUGIN_H

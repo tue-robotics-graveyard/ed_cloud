@@ -63,7 +63,7 @@ private:
     // was last changed in revision 5.
     std::vector<unsigned int> entity_server_revisions_;
 
-    ed_cloud::EntityUpdateInfo& addOrGetEntityUpdate(const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed_cloud::WorldModelDelta& delta);
+    std::pair<ed_cloud::EntityUpdateInfo&, bool> addOrGetEntityUpdate(const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed_cloud::WorldModelDelta& delta);
 };
 
 #endif // WORLD_UPDATE_SERVER_PLUGIN_H

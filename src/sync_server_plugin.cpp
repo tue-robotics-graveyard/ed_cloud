@@ -207,36 +207,38 @@ void SyncServer::addDelta(const ed::UpdateRequest &req)
 
 // ----------------------------------------------------------------------------------------------------
 
-ed_cloud::EntityUpdateInfo& SyncServer::addOrGetEntityUpdate(
+std::pair<ed_cloud::EntityUpdateInfo&, bool> SyncServer::addOrGetEntityUpdate(
         const ed::UUID& id, std::map<std::string, unsigned int>& ids, ed_cloud::WorldModelDelta& delta)
 {
     std::map<std::string, unsigned int>::const_iterator it = ids.find(id.str());
     if (it != ids.end())
-        return delta.update_entities[it->second];
+        return std::pair<ed_cloud::EntityUpdateInfo&, bool>(delta.update_entities[it->second], true);
 
-    // Remember the entity index for next time
-    ids[id.str()] = delta.update_entities.size();
-
-    // Add a fresh new entity update
-    delta.update_entities.push_back(ed_cloud::EntityUpdateInfo());
+    bool exists;
 
     // Get a reference to the new entity update
-    ed_cloud::EntityUpdateInfo& new_info = delta.update_entities.back();
+    ed_cloud::EntityUpdateInfo new_info;
 
     // Set id
     new_info.id = id.str();
 
-    // Find entity index
-    if (world_->findEntityIdx(new_info.id, new_info.index))
-    {
+    exists = world_->findEntityIdx(new_info.id, new_info.index);
 
+    // Find entity index
+    if (exists)
+    {
         // Update entity server revision list
         for(unsigned int i = entity_server_revisions_.size(); i < new_info.index + 1; ++i)
             entity_server_revisions_.push_back(0);
         entity_server_revisions_[new_info.index] = current_rev_number;
+
+        // Remember the entity index for next time
+        ids[id.str()] = delta.update_entities.size();
+        // Add a fresh new entity update
+        delta.update_entities.push_back(new_info);
     }
 
-    return new_info;
+    return std::pair<ed_cloud::EntityUpdateInfo&, bool>(delta.update_entities.back(), exists);
 }
 
 // -----------------------------------------------------------------------  -----------------------------
@@ -249,7 +251,6 @@ void SyncServer::process(const ed::PluginInput& data, ed::UpdateRequest &req)
         this->addDelta(*data.deltas[i]);
 
     std::stringstream fileName;
-    ROS_INFO("Writing file");
     fileName << "output-server-";
     fileName << this->current_rev_number;
     fileName << ".json";
@@ -257,8 +258,6 @@ void SyncServer::process(const ed::PluginInput& data, ed::UpdateRequest &req)
     ed::io::JSONWriter writer(ofile);
     ed_cloud::world_write(data.world, this->current_rev_number, writer);
     ofile.close();
-
-
 
     this->cb_queue_.callAvailable();
 }
@@ -279,46 +278,46 @@ ed_cloud::WorldModelDelta SyncServer::combineDeltas(int rev_number)
         // Types
         for (std::map<ed::UUID, std::string>::const_iterator it = delta.types.begin(); it != delta.types.end(); it ++)
         {
-            ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            if (!info.new_type)
-            {
-                info.new_type = true;
-                info.type = it->second;
+            std::pair<ed_cloud::EntityUpdateInfo&, bool> info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
+
+            if (info.second && !info.first.new_type) {
+                info.first.new_type = true;
+                info.first.type = it->second;
             }
         }
 
         // Poses
         for (std::map<ed::UUID, geo::Pose3D>::const_iterator it = delta.poses.begin(); it != delta.poses.end(); it ++)
         {
-            ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            if (!info.new_pose)
+            std::pair<ed_cloud::EntityUpdateInfo&, bool> info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
+            if (info.second && !info.first.new_pose)
             {
-                info.new_pose = true;
-                geo::convert(it->second, info.pose);
+                info.first.new_pose = true;
+                geo::convert(it->second, info.first.pose);
             }
         }
 
         // Shapes
         for (std::map<ed::UUID, geo::ShapeConstPtr>::const_iterator it = delta.shapes.begin(); it != delta.shapes.end(); it ++)
         {
-            ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            if (!info.new_shape_or_convex)
+            std::pair<ed_cloud::EntityUpdateInfo&, bool> info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
+            if (info.second && !info.first.new_shape_or_convex)
             {
-                info.new_shape_or_convex = true;
-                info.is_convex_hull = false;
-                shapeToMsg(*it->second, info.mesh);
+                info.first.new_shape_or_convex = true;
+                info.first.is_convex_hull = false;
+                shapeToMsg(*it->second, info.first.mesh);
             }
         }
 
         // Convex hulls
         for (std::map<ed::UUID, ed::ConvexHull2D>::const_iterator it = delta.convex_hulls.begin(); it != delta.convex_hulls.end(); it ++)
         {
-            ed_cloud::EntityUpdateInfo& info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
-            if (!info.new_shape_or_convex)
+            std::pair<ed_cloud::EntityUpdateInfo&, bool> info = addOrGetEntityUpdate(it->first, updated_ids, res_delta);
+            if (info.second && !info.first.new_shape_or_convex)
             {
-                info.new_shape_or_convex = true;
-                info.is_convex_hull = true;
-                polygonToMsg(it->second, info.polygon);
+                info.first.new_shape_or_convex = true;
+                info.first.is_convex_hull = true;
+                polygonToMsg(it->second, info.first.polygon);
             }
         }
 
@@ -327,6 +326,7 @@ ed_cloud::WorldModelDelta SyncServer::combineDeltas(int rev_number)
         {
             res_delta.remove_entities.push_back(it->str());
         }
+
     }
 
     return res_delta;
