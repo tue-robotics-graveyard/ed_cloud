@@ -7,5 +7,5 @@ plugins:
 - name: bouncing_cubes
   lib: libed_bouncing_cubes.so
   parameters:
-      num_cubes: 1000
+      num_cubes: 10000
   frequency: 10

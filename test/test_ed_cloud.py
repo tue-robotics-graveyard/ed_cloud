@@ -51,46 +51,51 @@ for i in os.listdir(client_dir):
 
     if (os.path.isfile(server_dir + file_name_server)):
         success = True
-        num_files_tested += 1
         if (args.verbose == True):
             print("[Rev. " + str(m.group(1)) + "]" + " Testing " + file_name_server + " vs. " + file_name_client)
-        tester = EDSyncTester.EDSyncTester(server_dir + file_name_server, client_dir + file_name_client, args.verbose)
 
-        if (tester.testRevNumber()):
-            failRevNum+= 1
-            success = False
+        try:
 
-        if (tester.testEntityNumber()):
-            failEntNum+= 1
-            success = False
+            tester = EDSyncTester.EDSyncTester(server_dir + file_name_server, client_dir + file_name_client, args.verbose)
+            num_files_tested += 1
 
-        if (tester.testTypes()):
-            failTypes+= 1
-            success = False
+            if (tester.testRevNumber()):
+                failRevNum+= 1
+                success = False
 
-        if (tester.testPoses()):
-            failPose+= 1
-            success = False
+            if (tester.testEntityNumber()):
+                failEntNum+= 1
+                success = False
 
-        if (tester.testConvexHulls()):
-            failConvexHulls+= 1
-            success = False
+            if (tester.testTypes()):
+                failTypes+= 1
+                success = False
 
-        if (tester.testShapesVertices()):
-            failShapeVertices+= 1
-            success = False
+            if (tester.testPoses()):
+                failPose+= 1
+                success = False
 
-        if (tester.testShapesTriangles()):
-            failShapeTriangles+= 1
-            success = False
+            if (tester.testConvexHulls()):
+                failConvexHulls+= 1
+                success = False
 
-        if (not success):
-            num_files_failed+= 1
-            if (args.verbose == True):
-                print("[Rev. " + str(m.group(1)) + "]" + " UNIT TEST FAILED")
-        else:
-            if (args.verbose == True):
-                print("[Rev. " + str(m.group(1)) + "]" + " UNIT TEST SUCCESSFUL")
+            if (tester.testShapesVertices()):
+                failShapeVertices+= 1
+                success = False
+
+            if (tester.testShapesTriangles()):
+                failShapeTriangles+= 1
+                success = False
+
+            if (not success):
+                num_files_failed+= 1
+                if (args.verbose == True):
+                    print("[Rev. " + str(m.group(1)) + "]" + " UNIT TEST FAILED")
+            else:
+                if (args.verbose == True):
+                    print("[Rev. " + str(m.group(1)) + "]" + " UNIT TEST SUCCESSFUL")
+        except ValueError:
+            print("Error with file " + file_name_server + " or " + file_name_client)
 
     if (args.verbose == False):
         pbar.update(num_files_tested)
