@@ -51,15 +51,15 @@ void SyncClient::initialize()
 
 void SyncClient::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
-    std::stringstream fileName;
-    ROS_INFO("Writing file");
-    fileName << "output-client-";
-    fileName << this->current_rev_number;
-    fileName << ".json";
-    std::ofstream ofile(fileName.str().c_str());
-    ed::io::JSONWriter writer(ofile);
-    ed_cloud::world_write(world, this->current_rev_number, writer);
-    ofile.close();
+//    std::stringstream fileName;
+//    ROS_INFO("Writing file");
+//    fileName << "output-client-";
+//    fileName << this->current_rev_number;
+//    fileName << ".json";
+//    std::ofstream ofile(fileName.str().c_str());
+//    ed::io::JSONWriter writer(ofile);
+//    ed_cloud::world_write(world, this->current_rev_number, writer);
+//    ofile.close();
 
     ed_cloud::GetWorldModel srv;
 

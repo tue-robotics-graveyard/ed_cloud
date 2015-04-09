@@ -28,9 +28,7 @@ public:
 
     virtual ~SyncServer();
 
-    void configure(tue::Configuration config);
-
-    void initialize();
+    void initialize(ed::InitData& init);
 
     void addDelta(const ed::UpdateRequest& req);
 
