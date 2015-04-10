@@ -100,8 +100,16 @@ void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
 {
     w.writeGroup("convex_hull");
 
-    w.writeArray("points");
+    w.writeGroup("center");
+    w.writeValue("x", ch.center_point.x);
+    w.writeValue("y", ch.center_point.y);
+    w.writeValue("z", ch.center_point.z);
+    w.endGroup();
 
+    w.writeValue("z_min", ch.min_z);
+    w.writeValue("z_max", ch.max_z);
+
+    w.writeGroup("points");
     for(unsigned int i = 0; i <  ch.chull.size(); ++i)
     {
         w.addArrayItem();
@@ -111,6 +119,7 @@ void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
     }
 
     w.endArray();
+    w.endGroup();
 
     w.endGroup();
 }

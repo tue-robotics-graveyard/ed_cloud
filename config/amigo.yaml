@@ -3,9 +3,17 @@ world_name: robotics_testlabs_empty
 # -----------------------------------------------------------------------------------------------------------------------------
 
 plugins:
-- name: sync_server_plugin
-  lib: libed_sync_server_plugin.so
+#- name: sync_server_plugin
+#  lib: libed_sync_server_plugin.so
+#  frequency: 10
+- name: hypertable_writer_plugin
+  lib: libed_hypertable_writer_plugin.so
+  parameters:
+    address: 172.17.0.3
+    port: 15867
+    namespace: test
   frequency: 10
+
 #- name: robot_plugin
 #  lib: libed_robot_plugin.so
 #  parameters:
