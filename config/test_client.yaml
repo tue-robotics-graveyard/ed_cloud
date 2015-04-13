@@ -1,8 +1,8 @@
 plugins:
-  - name: hypertable_reader_plugin
-    lib: libed_hypertable_reader_plugin.so
-    parameters:
-        address: 172.17.0.3
-        port: 15867
-        namespace: test
-    frequency: 10
+- name: hypertable_reader_plugin
+  lib: libed_hypertable_reader_plugin.so
+  parameters:
+    address: db.docker.wambacloud.com
+    port: 15867
+    namespace: test
+  frequency: 10
