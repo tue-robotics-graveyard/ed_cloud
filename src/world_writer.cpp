@@ -7,6 +7,8 @@
 
 #include <ed/io/json_writer.h>
 
+// ----------------------------------------------------------------------------------------------------
+
 void ed_cloud::write_shape(const geo::Mesh& mesh, ed::io::Writer& w)
 {
     w.writeGroup("shape");
@@ -40,6 +42,8 @@ void ed_cloud::write_shape(const geo::Mesh& mesh, ed::io::Writer& w)
     w.endGroup();
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void ed_cloud::write_entity(const ed::EntityConstPtr& ent, ed::io::Writer& w)
 {
     w.writeValue("id", ent->id().str());
@@ -54,6 +58,8 @@ void ed_cloud::write_entity(const ed::EntityConstPtr& ent, ed::io::Writer& w)
     if (!ent->convexHull().chull.empty())
         write_convex_hull(ent->convexHull(), w);
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, ed::io::Writer& w)
 {
@@ -73,6 +79,7 @@ void ed_cloud::world_write(const ed::WorldModel &world, int rev_number, ed::io::
     w.endGroup();
 }
 
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_pose(const geo::Pose3D &pose, ed::io::Writer& w)
 {
@@ -95,6 +102,7 @@ void ed_cloud::write_pose(const geo::Pose3D &pose, ed::io::Writer& w)
     w.endGroup();
 }
 
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
 {
@@ -109,7 +117,7 @@ void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
     w.writeValue("z_min", ch.min_z);
     w.writeValue("z_max", ch.max_z);
 
-    w.writeGroup("points");
+    w.writeArray("points");
     for(unsigned int i = 0; i <  ch.chull.size(); ++i)
     {
         w.addArrayItem();
@@ -117,9 +125,7 @@ void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
         w.writeValue("y", ch.chull[i].y);
         w.endArrayItem();
     }
-
     w.endArray();
-    w.endGroup();
 
     w.endGroup();
 }
