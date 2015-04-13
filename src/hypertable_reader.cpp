@@ -70,6 +70,8 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             process_cells(result_as_arrays.cells, req);
         }
 
+        req.setSyncUpdate(true);
+
         client->namespace_close(ns);
     } catch (Hypertable::ThriftGen::ClientException &e) {
         ROS_ERROR_STREAM(e.message);
