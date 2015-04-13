@@ -3,16 +3,16 @@ world_name: robotics_testlabs
 plugins:
 - name: sync_server_plugin
   lib: libed_sync_server_plugin.so
-  frequency: 10
+  frequency: 2
 - name: bouncing_cubes
   lib: libed_bouncing_cubes.so
   parameters:
       num_cubes: 10
-  frequency: 10
+  frequency: 2
 - name: hypertable_writer_plugin
   lib: libed_hypertable_writer_plugin.so
   parameters:
       address: db.docker.wambacloud.com
       port: 15867
       namespace: test
-  frequency: 10
+  frequency: 2

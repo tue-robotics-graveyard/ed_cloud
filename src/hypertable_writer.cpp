@@ -80,7 +80,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
             cell_as_array.push_back("pose");
-            cell_as_array.push_back("");
+            cell_as_array.push_back(ros::this_node::getName());
             ed::io::JSONWriter wr(str);
             ed_cloud::write_pose(it->second, wr);
             cell_as_array.push_back(str.str());
@@ -93,7 +93,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
             cell_as_array.push_back("convex_hull");
-            cell_as_array.push_back("");
+            cell_as_array.push_back(ros::this_node::getName());
             ed::io::JSONWriter wr(str);
             ed_cloud::write_convex_hull(it->second, wr);
             cell_as_array.push_back(str.str());
@@ -106,7 +106,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
             cell_as_array.push_back("shape");
-            cell_as_array.push_back("");
+            cell_as_array.push_back(ros::this_node::getName());
             ed::io::JSONWriter wr(str);
             ed_cloud::write_shape((*it->second).getMesh(), wr);
             cell_as_array.push_back(str.str());
@@ -118,7 +118,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
             cell_as_array.push_back("type");
-            cell_as_array.push_back("");
+            cell_as_array.push_back(ros::this_node::getName());
             cell_as_array.push_back(it->second.c_str());
             cells_as_arrays.push_back(cell_as_array);
         }
@@ -129,7 +129,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             cell_as_array.clear();
             cell_as_array.push_back((*it).c_str());
             cell_as_array.push_back("deleted");
-            cell_as_array.push_back("");
+            cell_as_array.push_back(ros::this_node::getName());
             cell_as_array.push_back("");
             cells_as_arrays.push_back(cell_as_array);
         }

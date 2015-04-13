@@ -50,8 +50,6 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     ed_cloud::world_write(data.world, this->current_rev_number, writer);
     ofile.close();
 
-    this->current_rev_number++;
-
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
 
@@ -66,7 +64,11 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
 
         client->hql_query_as_arrays(result_as_arrays, ns, query.str());
 
-        process_cells(result_as_arrays.cells, req);
+        if (!result_as_arrays.cells.empty()) {
+            ROS_INFO("New data!");
+            current_rev_number++;
+            process_cells(result_as_arrays.cells, req);
+        }
 
         client->namespace_close(ns);
     } catch (Hypertable::ThriftGen::ClientException &e) {
