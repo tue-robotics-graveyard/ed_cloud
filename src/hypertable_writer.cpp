@@ -74,6 +74,11 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     for(unsigned int i = 0; i < data.deltas.size(); ++i) {
         ed::UpdateRequest req = *data.deltas[i];
 
+        // Do not write sync update requests to the database. These are deltas that were
+        // generated to keep the local instance in sync with the database
+        if (req.is_sync_update)
+            continue;
+
         for (auto it = req.poses.begin();
              it != req.poses.end(); it++) {
             std::stringstream str;
