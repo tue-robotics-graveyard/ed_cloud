@@ -106,4 +106,14 @@ void read_convex_hull(ed::io::Reader& r, ed::ConvexHull2D& ch)
     r.endGroup();
 }
 
+void read_publisher(ed::io::Reader &r, std::string publisher)
+{
+    r.readValue("publisher", publisher);
+}
+
+void read_type(ed::io::Reader &r, ed::TYPE& type)
+{
+    r.readValue("type", type);
+}
+
 }

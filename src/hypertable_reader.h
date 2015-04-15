@@ -35,6 +35,8 @@ public:
 
     void add_to_world_model(Hypertable::ThriftGen::CellAsArray &cell, ed::UpdateRequest &req);
 
+    void get_cell_publisher(Hypertable::ThriftGen::CellAsArray &cell, std::string& publisher);
+
 private:
 
     std::string db_address;
@@ -43,7 +45,8 @@ private:
     Hypertable::Thrift::Client *client;
     int64_t last_update_time;
     const std::string table_name = "entity_delta";
-    int64_t current_rev_number;
+    int64_t total_elements;
+    std::string world_text;
 };
 
 #endif

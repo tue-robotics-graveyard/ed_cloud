@@ -257,7 +257,7 @@ class EDSyncTester:
                 self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Types Test]"+
                 "[ERROR] Inconsistent type for instance id = " + str(id) +
                 ", " + "\"" + str(type) + "\"" + " != " + "\"" + str(entity_type_client[id] + "\""))
-
+                error = True
 
         if (error == False):
             self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Types Test]"+ " SUCCESS")

@@ -111,7 +111,8 @@ bool SyncServer::GetWorldModel(ed_cloud::GetWorldModel::Request &req, ed_cloud::
     if (req.rev_number > current_rev_number)
     {
         std::stringstream ss;
-        ss << "Requested revision is in the future: client asks revision '" << req.rev_number << "' but current revision is '" << current_rev_number << "'.";
+        ss << "Requested revision is in the future: client asks revision '" << req.rev_number <<
+              "' but current revision is '" << current_rev_number << "'.";
         res.error = ss.str();
     }
     else if (current_rev_number > req.rev_number)
@@ -243,16 +244,6 @@ void SyncServer::process(const ed::PluginInput& data, ed::UpdateRequest &req)
 
     for(unsigned int i = 0; i < data.deltas.size(); ++i)
         this->addDelta(*data.deltas[i]);
-
-
-    std::stringstream fileName;
-    fileName << "output-server-";
-    fileName << this->current_rev_number;
-    fileName << ".json";
-    std::ofstream ofile(fileName.str().c_str());
-    ed::io::JSONWriter writer(ofile);
-    ed_cloud::world_write(data.world, this->current_rev_number, writer);
-    ofile.close();
 
     this->cb_queue_.callAvailable();
 }

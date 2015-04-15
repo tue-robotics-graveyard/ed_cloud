@@ -35,7 +35,8 @@ private:
     int db_port;
     std::string db_namespace;
     Hypertable::Thrift::Client *client;
-
+    int64_t total_elements;
+    int stop;
     const std::string table_name = "entity_delta";
 
 };

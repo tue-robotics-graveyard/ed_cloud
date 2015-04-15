@@ -94,7 +94,8 @@ for i in os.listdir(client_dir):
             else:
                 if (args.verbose == True):
                     print("[Rev. " + str(m.group(1)) + "]" + " UNIT TEST SUCCESSFUL")
-        except ValueError:
+        except ValueError as e:
+            print(e.args)
             print("Error with file " + file_name_server + " or " + file_name_client)
 
     if (args.verbose == False):

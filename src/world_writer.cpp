@@ -9,6 +9,11 @@
 
 // ----------------------------------------------------------------------------------------------------
 
+void ed_cloud::write_publisher(const std::string &node_name, ed::io::Writer& w) {
+    w.writeValue("publisher", node_name);
+}
+
+
 void ed_cloud::write_shape(const geo::Mesh& mesh, ed::io::Writer& w)
 {
     w.writeGroup("shape");
@@ -47,7 +52,7 @@ void ed_cloud::write_shape(const geo::Mesh& mesh, ed::io::Writer& w)
 void ed_cloud::write_entity(const ed::EntityConstPtr& ent, ed::io::Writer& w)
 {
     w.writeValue("id", ent->id().str());
-    w.writeValue("type", ent->type());
+    write_type(ent->type(), w);
 
     if (ent->has_pose())
         write_pose(ent->pose(), w);
@@ -128,4 +133,10 @@ void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
     w.endArray();
 
     w.endGroup();
+}
+
+
+void ed_cloud::write_type(const ed::TYPE &type, ed::io::Writer &w)
+{
+    w.writeValue("type", type);
 }

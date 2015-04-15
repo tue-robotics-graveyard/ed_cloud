@@ -14,6 +14,8 @@ namespace ed_cloud {
     void write_pose(const geo::Pose3D& pose, ed::io::Writer& w);
     void write_shape(const geo::Mesh& mesh, ed::io::Writer& w);
     void write_convex_hull(const ed::ConvexHull2D& ch, ed::io::Writer& w);
+    void write_publisher(const std::string &node_name, ed::io::Writer& w);
+    void write_type(const ed::TYPE &type, ed::io::Writer& w);
 }
 
 #endif // WORLD_WRITER_H

@@ -17,12 +17,15 @@ HypertableReaderPlugin::HypertableReaderPlugin()
 }
 
 HypertableReaderPlugin::~HypertableReaderPlugin() {
+    ROS_INFO("Writing file");
+    std::ofstream ofile("output-client-0.json");
+    ofile << world_text;
+    ofile.close();
 }
 
 void HypertableReaderPlugin::initialize(ed::InitData& init) {
-
+    total_elements = 0;
     last_update_time = 0;
-    current_rev_number = 0;
 
     init.config.value("address", db_address);
     init.config.value("port", db_port);
@@ -33,6 +36,7 @@ void HypertableReaderPlugin::initialize(ed::InitData& init) {
     }
     catch (Hypertable::ThriftGen::ClientException &e) {
       init.config.addError(e.message);
+      ROS_ERROR_STREAM(e.message);
     }
 
 }
@@ -41,14 +45,11 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
 
     std::vector<Hypertable::ThriftGen::CellAsArray> cells_as_arrays;
 
-    std::stringstream fileName;
-    fileName << "output-server-";
-    fileName << this->current_rev_number;
-    fileName << ".json";
-    std::ofstream ofile(fileName.str().c_str());
+    std::stringstream ofile;
     ed::io::JSONWriter writer(ofile);
-    ed_cloud::world_write(data.world, this->current_rev_number, writer);
-    ofile.close();
+    ed_cloud::world_write(data.world, 0, writer);
+    world_text = ofile.str();
+
 
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
@@ -65,8 +66,9 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
         client->hql_query_as_arrays(result_as_arrays, ns, query.str());
 
         if (!result_as_arrays.cells.empty()) {
-            ROS_INFO("New data!");
-            current_rev_number++;
+            total_elements+=result_as_arrays.cells.size();
+            ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
+                            << " Elements, Total " << total_elements);
             process_cells(result_as_arrays.cells, req);
         }
 
@@ -100,6 +102,7 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
     ed::UUID current_entity;
     bool entity_removed = false;
     int64_t  timestamp;
+    std::string publisher;
     for (auto & cell : cells) {
 
         timestamp = atol(cell[4].c_str());
@@ -108,9 +111,13 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
             last_update_time = timestamp;
         }
 
-        if (current_entity == cell[0] && entity_removed) {
+        get_cell_publisher(cell, publisher);
+
+        if (publisher == ros::this_node::getName() ||
+                (current_entity == cell[0] && entity_removed)) {
             continue;
         } else {
+            entity_removed = false;
             current_entity = cell[0];
             if (cell[1] == "deleted") {
                 entity_removed = true;
@@ -118,7 +125,6 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
             } else {
                 add_to_world_model(cell, req);
             }
-
         }
     }
 
@@ -150,10 +156,16 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
         req.setConvexHull(entity_id, ch);
 
     } else if (cell[1] == "type") {
-        ed::TYPE type = cell[3];
+        ed::TYPE type;
+        ed_cloud::read_type(reader, type);
         req.setType(entity_id, type);
     }
+}
 
+void HypertableReaderPlugin::get_cell_publisher(Hypertable::ThriftGen::CellAsArray &cell, std::string &publisher)
+{
+    ed::io::JSONReader reader(cell[3].c_str());
+    ed_cloud::read_publisher(reader, publisher);
 }
 
 ED_REGISTER_PLUGIN(HypertableReaderPlugin)
