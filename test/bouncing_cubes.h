@@ -37,6 +37,7 @@ private:
     unsigned long newId;
     int num_cubes_;
     std::string ns;
+    int stop;
 };
 
 #endif

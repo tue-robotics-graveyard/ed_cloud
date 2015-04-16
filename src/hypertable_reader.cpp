@@ -66,6 +66,14 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
         client->hql_query_as_arrays(result_as_arrays, ns, query.str());
 
         if (!result_as_arrays.cells.empty()) {
+            if (result_as_arrays.cells.size() == 1) {
+                // Code to detect strange phenomenon
+                std::cout << "ONLY ONE!" << result_as_arrays.cells[0][0] << "," <<
+                "," << result_as_arrays.cells[0][1] <<  "," << result_as_arrays.cells[0][2] <<
+                    "," << result_as_arrays.cells[0][3] <<  ", time = " << result_as_arrays.cells[0][4] <<
+                std::endl;
+            }
+
             total_elements+=result_as_arrays.cells.size();
             ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
                             << " Elements, Total " << total_elements);

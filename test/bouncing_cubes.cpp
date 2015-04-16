@@ -26,6 +26,7 @@ void BouncingCubes::configure(tue::Configuration config)
 {
     config.value("num_cubes", num_cubes_);
     config.value("ns", ns);
+    config.value("stop", stop);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -38,6 +39,10 @@ void BouncingCubes::initialize()
 
 void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
+    if (stop == 0) {
+        return;
+    }
+
     if (cubes.empty())
     {
 
@@ -121,6 +126,10 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
                                                              geo::Vector3(new_shape_x, new_shape_y, new_shape_z))));
         }
      }
+
+    if (stop > 0) {
+        stop--;
+    }
 
 }
 

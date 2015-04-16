@@ -1,8 +1,16 @@
 plugins:
+- name: hypertable_writer_plugin
+  lib: libed_hypertable_writer_plugin.so
+  parameters:
+      address: db.docker.wambacloud.com
+      port: 15867
+      namespace: test
+      stop: 10000
+  frequency: 20
 - name: hypertable_reader_plugin
   lib: libed_hypertable_reader_plugin.so
   parameters:
-    address: db.docker.wambacloud.com
-    port: 15867
-    namespace: test
-  frequency: 20
+      address: db.docker.wambacloud.com
+      port: 15867
+      namespace: test
+      frequency: 20

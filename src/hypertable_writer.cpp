@@ -79,6 +79,9 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     Hypertable::ThriftGen::CellAsArray cell_as_array;
     Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
 
+    if (stop == 0) {
+        return;
+    }
 
     for(unsigned int i = 0; i < data.deltas.size(); ++i) {
         ed::UpdateRequest req = *data.deltas[i];
@@ -184,19 +187,10 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     }
 
     if (stop == 0) {
-        ROS_INFO("Shutting down!");
-
-        std::stringstream fileName;
-        fileName << "output-server-";
-        fileName << "0.json";
-        std::ofstream ofile(fileName.str().c_str());
-        ed::io::JSONWriter writer(ofile);
-        ed_cloud::world_write(data.world, 0, writer);
-        ofile.close();
-
-        ros::shutdown();
-        exit(0);
+        ROS_INFO("Stopping writing");
     }
+
+
 }
 
 ED_REGISTER_PLUGIN(HypertableWriterPlugin)

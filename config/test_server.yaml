@@ -1,17 +1,23 @@
 plugins:
-- name: sync_server_plugin
-  lib: libed_sync_server_plugin.so
-  frequency: 20
 - name: bouncing_cubes
   lib: libed_bouncing_cubes.so
   parameters:
-      num_cubes: 100
-  frequency: 20
+      num_cubes: 10
+      ns: r-
+      stop: 603
+  frequency: 30
 - name: hypertable_writer_plugin
   lib: libed_hypertable_writer_plugin.so
   parameters:
       address: db.docker.wambacloud.com
       port: 15867
       namespace: test
-      stop: 10000
-  frequency: 20
+      stop: 700
+  frequency: 30
+- name: hypertable_reader_plugin
+  lib: libed_hypertable_reader_plugin.so
+  parameters:
+      address: db.docker.wambacloud.com
+      port: 15867
+      namespace: test
+      frequency: 30
