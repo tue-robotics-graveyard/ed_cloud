@@ -37,8 +37,6 @@ private:
     Hypertable::Thrift::Client *client;
     int64_t total_elements;
     int stop;
-    const std::string table_name = "entity_delta";
-
 };
 
 #endif

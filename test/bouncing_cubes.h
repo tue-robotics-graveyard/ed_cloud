@@ -36,6 +36,7 @@ private:
     std::set<ed::UUID> removed_entities;
     unsigned long newId;
     int num_cubes_;
+    std::string ns;
 };
 
 #endif

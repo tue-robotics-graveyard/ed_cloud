@@ -15,6 +15,7 @@
 #include <ThriftBroker/ThriftHelper.h>
 #include <ThriftBroker/SerializedCellsReader.h>
 #include <ThriftBroker/SerializedCellsWriter.h>
+#include <ros/time.h>
 
 class HypertableReaderPlugin : public ed::Plugin
 {
@@ -29,7 +30,7 @@ public:
 
     void process(const ed::PluginInput& data, ed::UpdateRequest& req);
 
-    std::string get_last_timestamp_string( );
+    std::string get_timestamp_string(ros::Time& time);
 
     void process_cells(std::vector<Hypertable::ThriftGen::CellAsArray> &cells, ed::UpdateRequest &req);
 
@@ -43,8 +44,7 @@ private:
     int db_port;
     std::string db_namespace;
     Hypertable::Thrift::Client *client;
-    int64_t last_update_time;
-    const std::string table_name = "entity_delta";
+    ros::Time max_timestamp_queried;
     int64_t total_elements;
     std::string world_text;
 };

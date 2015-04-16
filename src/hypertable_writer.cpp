@@ -8,6 +8,7 @@
 #include <ed/io/json_writer.h>
 #include <geolib/Shape.h>
 #include <fstream>
+#include "ed_hypertable.h"
 
 HypertableWriterPlugin::HypertableWriterPlugin()
 {
@@ -35,31 +36,33 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
         }
 
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
-        if (!client->table_exists(ns, HypertableWriterPlugin::table_name)){
-            client->table_drop(ns, HypertableWriterPlugin::table_name, true);
+        if (!client->table_exists(ns, ed_hypertable::TABLE_NAME)){
+            client->table_drop(ns, ed_hypertable::TABLE_NAME, true);
 
             Hypertable::ThriftGen::Schema schema;
             std::map<std::string, Hypertable::ThriftGen::ColumnFamilySpec> cf_specs;
             Hypertable::ThriftGen::ColumnFamilySpec cf;
+            Hypertable::ThriftGen::ColumnFamilyOptions opts;
 
-            cf.__set_name("pose");
-            cf_specs["pose"] = cf;
-            cf.__set_name("type");
-            cf_specs["type"] = cf;
-            cf.__set_name("deleted");
-            cf_specs["deleted"] = cf;
-            cf.__set_name("data");
-            cf_specs["data"] = cf;
-            cf.__set_name("type");
-            cf_specs["type"] = cf;
-            cf.__set_name("convex_hull");
-            cf_specs["convex_hull"] = cf;
-            cf.__set_name("shape");
-            cf_specs["shape"] = cf;
+            opts.__set_max_versions(ed_hypertable::MAX_VERSIONS);
+            cf.__set_options(opts);
+
+            cf.__set_name(ed_hypertable::POSE_CELL);
+            cf_specs[ed_hypertable::POSE_CELL] = cf;
+            cf.__set_name(ed_hypertable::TYPE_CELL);
+            cf_specs[ed_hypertable::TYPE_CELL] = cf;
+            cf.__set_name(ed_hypertable::DELETED_CELL);
+            cf_specs[ed_hypertable::DELETED_CELL] = cf;
+            cf.__set_name(ed_hypertable::DATA_CELL);
+            cf_specs[ed_hypertable::DATA_CELL] = cf;
+            cf.__set_name(ed_hypertable::CONVEX_HULL_CELL);
+            cf_specs[ed_hypertable::CONVEX_HULL_CELL] = cf;
+            cf.__set_name(ed_hypertable::SHAPE_CELL);
+            cf_specs[ed_hypertable::SHAPE_CELL] = cf;
 
             schema.__set_column_families(cf_specs);
 
-            client->table_create(ns, HypertableWriterPlugin::table_name, schema);
+            client->table_create(ns, ed_hypertable::TABLE_NAME, schema);
         }
 
         client->namespace_close(ns);
@@ -90,7 +93,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             std::stringstream str;
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
-            cell_as_array.push_back("pose");
+            cell_as_array.push_back(ed_hypertable::POSE_CELL);
             cell_as_array.push_back("");
             ed::io::JSONWriter wr(str);
             ed_cloud::write_publisher(ros::this_node::getName(), wr);
@@ -107,7 +110,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             std::stringstream str;
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
-            cell_as_array.push_back("convex_hull");
+            cell_as_array.push_back(ed_hypertable::CONVEX_HULL_CELL);
             cell_as_array.push_back("");
             ed::io::JSONWriter wr(str);
             ed_cloud::write_publisher(ros::this_node::getName(), wr);
@@ -122,7 +125,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             std::stringstream str;
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
-            cell_as_array.push_back("shape");
+            cell_as_array.push_back(ed_hypertable::SHAPE_CELL);
             cell_as_array.push_back("");
             ed::io::JSONWriter wr(str);
             ed_cloud::write_publisher(ros::this_node::getName(), wr);
@@ -138,7 +141,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             std::stringstream str;
             cell_as_array.clear();
             cell_as_array.push_back((it->first).c_str());
-            cell_as_array.push_back("type");
+            cell_as_array.push_back(ed_hypertable::TYPE_CELL);
             cell_as_array.push_back("");
             ed::io::JSONWriter wr(str);
             ed_cloud::write_publisher(ros::this_node::getName(), wr);
@@ -155,7 +158,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
             std::stringstream str;
             cell_as_array.clear();
             cell_as_array.push_back((*it).c_str());
-            cell_as_array.push_back("deleted");
+            cell_as_array.push_back(ed_hypertable::DELETED_CELL);
             cell_as_array.push_back("");
             ed::io::JSONWriter wr(str);
             ed_cloud::write_publisher(ros::this_node::getName(), wr);
@@ -170,7 +173,7 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
         total_elements+=cells_as_arrays.size();
         ROS_INFO_STREAM("Publishing " << cells_as_arrays.size() << " Elements, "
                         << "Total = " << total_elements);
-        client->set_cells_as_arrays(ns, HypertableWriterPlugin::table_name,
+        client->set_cells_as_arrays(ns, ed_hypertable::TABLE_NAME,
                                     cells_as_arrays);
     }
 

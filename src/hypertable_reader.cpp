@@ -11,13 +11,14 @@
 #include <geolib/Shape.h>
 #include <geolib/Mesh.h>
 #include <fstream>
+#include "ed_hypertable.h"
 
 HypertableReaderPlugin::HypertableReaderPlugin()
 {
 }
 
 HypertableReaderPlugin::~HypertableReaderPlugin() {
-    ROS_INFO("Writing file");
+    std::cout << "Writing file" << std::endl;
     std::ofstream ofile("output-client-0.json");
     ofile << world_text;
     ofile.close();
@@ -25,7 +26,7 @@ HypertableReaderPlugin::~HypertableReaderPlugin() {
 
 void HypertableReaderPlugin::initialize(ed::InitData& init) {
     total_elements = 0;
-    last_update_time = 0;
+    max_timestamp_queried = max_timestamp_queried.fromNSec(0);
 
     init.config.value("address", db_address);
     init.config.value("port", db_port);
@@ -50,15 +51,14 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     ed_cloud::world_write(data.world, 0, writer);
     world_text = ofile.str();
 
-
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
 
         std::stringstream query;
 
-        query << "SELECT * FROM " << table_name
+        query << "SELECT * FROM " << ed_hypertable::TABLE_NAME
               << " WHERE TIMESTAMP > "
-              << "\"" << get_last_timestamp_string() << "\""
+              << "\"" << get_timestamp_string(max_timestamp_queried) << "\""
               << " MAX_VERSIONS = 1";
 
         Hypertable::ThriftGen::HqlResultAsArrays result_as_arrays;
@@ -80,18 +80,17 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     }
 }
 
-std::string HypertableReaderPlugin::get_last_timestamp_string()
+std::string HypertableReaderPlugin::get_timestamp_string(ros::Time &time)
 {
     int64_t  date_msb, date_lsb;
     char timestamp[100];
-    date_msb = last_update_time / 1e9;
-    date_lsb = last_update_time % (long)1e9;
+    date_msb = time.sec;
+    date_lsb = time.nsec;
 
     struct tm *timestamp_tm = localtime(&date_msb);
-
     strftime (timestamp, 99, "%F %T",
                      timestamp_tm);
-    sprintf(timestamp, "%s.%ld", timestamp, date_lsb);
+    sprintf(timestamp, "%s.%09ld", timestamp, date_lsb);
 
     return std::string(timestamp);
 
@@ -101,14 +100,17 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
 {
     ed::UUID current_entity;
     bool entity_removed = false;
-    int64_t  timestamp;
+
+    long timestamp_aux;
+    long max_timestamp = 0;
+
     std::string publisher;
     for (auto & cell : cells) {
 
-        timestamp = atol(cell[4].c_str());
+        timestamp_aux = atol(cell[4].c_str());
 
-        if (last_update_time < timestamp) {
-            last_update_time = timestamp;
+        if (timestamp_aux > max_timestamp) {
+            max_timestamp = timestamp_aux;
         }
 
         get_cell_publisher(cell, publisher);
@@ -119,7 +121,7 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
         } else {
             entity_removed = false;
             current_entity = cell[0];
-            if (cell[1] == "deleted") {
+            if (cell[1] == ed_hypertable::DELETED_CELL) {
                 entity_removed = true;
                 req.removeEntity(current_entity);
             } else {
@@ -128,6 +130,8 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
         }
     }
 
+    max_timestamp_queried = max_timestamp_queried.fromNSec(max_timestamp);
+
 }
 
 void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArray &cell, ed::UpdateRequest &req)
@@ -135,11 +139,11 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
     ed::UUID entity_id = cell[0];
     ed::io::JSONReader reader(cell[3].c_str());
 
-    if (cell[1] == "pose") {
+    if (cell[1] == ed_hypertable::POSE_CELL) {
         geo::Pose3D pose;
         ed_cloud::read_pose(reader, pose);
         req.setPose(entity_id, pose);
-    } else if (cell[1] == "shape") {
+    } else if (cell[1] == ed_hypertable::SHAPE_CELL) {
         geo::Mesh mesh;
 
         ed_cloud::read_shape(reader, mesh);
@@ -148,14 +152,14 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
         shape->setMesh(mesh);
         req.setShape(entity_id, shape);
 
-    }  else if (cell[1] == "convex_hull") {
+    }  else if (cell[1] == ed_hypertable::CONVEX_HULL_CELL) {
 
         ed::ConvexHull2D ch;
         ed_cloud::read_convex_hull(reader, ch);
 
         req.setConvexHull(entity_id, ch);
 
-    } else if (cell[1] == "type") {
+    } else if (cell[1] == ed_hypertable::TYPE_CELL) {
         ed::TYPE type;
         ed_cloud::read_type(reader, type);
         req.setType(entity_id, type);

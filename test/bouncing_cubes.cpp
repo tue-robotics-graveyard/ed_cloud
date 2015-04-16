@@ -25,6 +25,7 @@ BouncingCubes::~BouncingCubes()
 void BouncingCubes::configure(tue::Configuration config)
 {
     config.value("num_cubes", num_cubes_);
+    config.value("ns", ns);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
                 cube.vel = geo::Vector3(0.2, 0.1, -0.05);
 
                 std::stringstream ss_id;
-                ss_id << "cube-" << i;
+                ss_id << ns << "cube-" << i;
 
                 cube.id = ss_id.str();
 
@@ -80,7 +81,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
                 if (pos != removed_entities.end()) {
                     removed_entities.erase(pos);
                     std::stringstream ss_id;
-                    ss_id << "cube-" << newId;
+                    ss_id << ns << "cube-" << newId;
                     cube.id = ss_id.str();
                     newId++;
                 }

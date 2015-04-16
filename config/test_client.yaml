@@ -5,4 +5,4 @@ plugins:
     address: db.docker.wambacloud.com
     port: 15867
     namespace: test
-  frequency: 10
+  frequency: 20
