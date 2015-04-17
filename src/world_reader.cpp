@@ -6,6 +6,9 @@
 #include <geolib/Mesh.h>
 #include <geolib/datatypes.h>
 
+#include <rgbd/serialization.h>
+#include <ed/serialization/serialization.h>
+
 namespace ed_cloud
 {
 
@@ -116,4 +119,26 @@ void read_type(ed::io::Reader &r, ed::TYPE& type)
     r.readValue("type", type);
 }
 
+// ----------------------------------------------------------------------------------------------------
+
+ed::MeasurementConstPtr read_measurement(std::istream& in)
+{
+    tue::serialization::InputArchive a_in(in);
+
+    rgbd::ImagePtr image(new rgbd::Image);
+    rgbd::deserialize(a_in, *image);
+
+    ed::ImageMask mask;
+    ed::deserialize(a_in, mask);
+
+    geo::Pose3D p;
+    a_in >> p.t.x >> p.t.y >> p.t.z
+         >> p.R.xx >> p.R.xy >> p.R.xz
+         >> p.R.yx >> p.R.yy >> p.R.yz
+         >> p.R.zx >> p.R.zy >> p.R.zz;
+
+    return ed::MeasurementConstPtr(new ed::Measurement(image, mask, p));
 }
+
+}
+

@@ -15,6 +15,11 @@ void read_shape(ed::io::Reader& r, geo::Mesh& mesh);
 void read_convex_hull(ed::io::Reader& r, ed::ConvexHull2D& ch);
 void read_publisher(ed::io::Reader& r, std::string publisher);
 void read_type(ed::io::Reader& r, ed::TYPE& type);
+
+// Binary
+
+ed::MeasurementConstPtr read_measurement(std::istream& in);
+
 }
 
 #endif // WORLD_WRITER_H

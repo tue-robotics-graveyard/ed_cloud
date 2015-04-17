@@ -7,6 +7,10 @@
 
 #include <ed/io/json_writer.h>
 
+#include <ed/serialization/serialization.h>
+#include <rgbd/serialization.h>
+#include <ed/measurement.h>
+
 // ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_publisher(const std::string &node_name, ed::io::Writer& w) {
@@ -139,4 +143,21 @@ void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
 void ed_cloud::write_type(const ed::TYPE &type, ed::io::Writer &w)
 {
     w.writeValue("type", type);
+}
+
+void ed_cloud::write_measurement(const ed::Measurement& msr, std::ostream& out)
+{
+    tue::serialization::OutputArchive a_out(out);
+
+    // save image
+    rgbd::serialize(*msr.image(), a_out);
+
+    // save mask
+    ed::serialize(msr.imageMask(), a_out);
+
+    const geo::Pose3D& p = msr.sensorPose();
+    a_out << p.t.x << p.t.y << p.t.z
+          << p.R.xx << p.R.xy << p.R.xz
+          << p.R.yx << p.R.yy << p.R.yz
+          << p.R.zx << p.R.zy << p.R.zz;
 }
