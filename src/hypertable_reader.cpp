@@ -27,10 +27,27 @@ HypertableReaderPlugin::~HypertableReaderPlugin() {
 void HypertableReaderPlugin::initialize(ed::InitData& init) {
     total_elements = 0;
     max_timestamp_queried = max_timestamp_queried.fromNSec(0);
-
     init.config.value("address", db_address);
     init.config.value("port", db_port);
     init.config.value("namespace", db_namespace);
+
+    elements_to_read.insert(ed_hypertable::DELETED_CELL);
+
+    std::stringstream select_columns_aux;
+    select_columns_aux <<  ed_hypertable::DELETED_CELL;
+
+    if (init.config.readArray("read"))
+    {
+        while(init.config.nextArrayItem())
+        {
+            std::string property_to_read;
+            init.config.value("property", property_to_read);
+            elements_to_read.insert(property_to_read);
+            select_columns_aux << "," << property_to_read;
+        }
+    }
+
+    select_columns = select_columns_aux.str();
 
     try {
         client = new Hypertable::Thrift::Client(db_address, db_port);
@@ -56,7 +73,8 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
 
         std::stringstream query;
 
-        query << "SELECT * FROM " << ed_hypertable::TABLE_NAME
+        query << "SELECT " << select_columns << " FROM "
+              << ed_hypertable::ENTITY_TABLE_NAME
               << " WHERE TIMESTAMP > "
               << "\"" << get_timestamp_string(max_timestamp_queried) << "\""
               << " MAX_VERSIONS = 1";
@@ -139,7 +157,6 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
     }
 
     max_timestamp_queried = max_timestamp_queried.fromNSec(max_timestamp);
-
 }
 
 void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArray &cell, ed::UpdateRequest &req)
@@ -153,31 +170,34 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
         req.setPose(entity_id, pose);
     } else if (cell[1] == ed_hypertable::SHAPE_CELL) {
         geo::Mesh mesh;
-
         ed_cloud::read_shape(reader, mesh);
         geo::ShapePtr shape(new geo::Shape());
-
         shape->setMesh(mesh);
         req.setShape(entity_id, shape);
-
     }  else if (cell[1] == ed_hypertable::CONVEX_HULL_CELL) {
-
         ed::ConvexHull2D ch;
         ed_cloud::read_convex_hull(reader, ch);
-
         req.setConvexHull(entity_id, ch);
-
     } else if (cell[1] == ed_hypertable::TYPE_CELL) {
         ed::TYPE type;
         ed_cloud::read_type(reader, type);
         req.setType(entity_id, type);
+    } else if (cell[1] == ed_hypertable::MEASUREMENT_CELL) {
+        std::istringstream i_str(cell[3]);
+        ed::MeasurementConstPtr measure = ed_cloud::read_measurement(i_str);
+        req.addMeasurement(entity_id, measure);
     }
 }
 
 void HypertableReaderPlugin::get_cell_publisher(Hypertable::ThriftGen::CellAsArray &cell, std::string &publisher)
 {
-    ed::io::JSONReader reader(cell[3].c_str());
-    ed_cloud::read_publisher(reader, publisher);
+    if (cell[1] == ed_hypertable::MEASUREMENT_CELL) {
+        std::istringstream iss(cell[3]);
+        iss >> publisher;
+    } else {
+        ed::io::JSONReader reader(cell[3].c_str());
+        ed_cloud::read_publisher(reader, publisher);
+    }
 }
 
 ED_REGISTER_PLUGIN(HypertableReaderPlugin)

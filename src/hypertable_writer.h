@@ -29,6 +29,16 @@ public:
 
     void process(const ed::PluginInput& data, ed::UpdateRequest& req);
 
+    void add_shapes(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+    void add_convex_hulls(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+    void add_type(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+    void add_removed_entities(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+    void add_poses(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+    void add_measurements(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+    //void add_custom_data(std::vector<Hypertable::ThriftGen::CellAsArray>& cells_as_arrays, ed::UpdateRequest& req);
+
+
+
 private:
 
     std::string db_address;
@@ -37,6 +47,7 @@ private:
     Hypertable::Thrift::Client *client;
     int64_t total_elements;
     int stop;
+    std::set<std::string> elements_to_write;
 };
 
 #endif

@@ -47,6 +47,8 @@ private:
     ros::Time max_timestamp_queried;
     int64_t total_elements;
     std::string world_text;
+    std::set<std::string> elements_to_read;
+    std::string select_columns;
 };
 
 #endif

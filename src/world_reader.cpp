@@ -8,6 +8,8 @@
 
 #include <rgbd/serialization.h>
 #include <ed/serialization/serialization.h>
+#include <ed/mask.h>
+#include <ed/measurement.h>
 
 namespace ed_cloud
 {

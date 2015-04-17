@@ -4,7 +4,7 @@ plugins:
   parameters:
       num_cubes: 10
       ns: r-
-      stop: 603
+      stop: 600
   frequency: 30
 - name: hypertable_writer_plugin
   lib: libed_hypertable_writer_plugin.so
@@ -13,6 +13,11 @@ plugins:
       port: 15867
       namespace: test
       stop: 700
+      write:
+        - property: pose
+        - property: shape
+        - property: convex_hull
+        - property: type
   frequency: 30
 - name: hypertable_reader_plugin
   lib: libed_hypertable_reader_plugin.so
@@ -20,4 +25,9 @@ plugins:
       address: db.docker.wambacloud.com
       port: 15867
       namespace: test
-      frequency: 30
+      read:
+        - property: pose
+        - property: shape
+        - property: convex_hull
+        - property: type
+  frequency: 30

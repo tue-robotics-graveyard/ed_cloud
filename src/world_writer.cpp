@@ -17,7 +17,6 @@ void ed_cloud::write_publisher(const std::string &node_name, ed::io::Writer& w) 
     w.writeValue("publisher", node_name);
 }
 
-
 void ed_cloud::write_shape(const geo::Mesh& mesh, ed::io::Writer& w)
 {
     w.writeGroup("shape");
@@ -160,4 +159,10 @@ void ed_cloud::write_measurement(const ed::Measurement& msr, std::ostream& out)
           << p.R.xx << p.R.xy << p.R.xz
           << p.R.yx << p.R.yy << p.R.yz
           << p.R.zx << p.R.zy << p.R.zz;
+}
+
+
+void ed_cloud::write_publisher_binary(const std::string &node_name, std::ostream &out)
+{
+     out << node_name;
 }
