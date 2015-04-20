@@ -21,7 +21,7 @@ namespace ed_cloud {
     // Binary
 
     void write_publisher_binary(const std::string& node_name, std::ostream& out);
-    void write_measurement_binary(const ed::Measurement& msr, std::ostream& out);
+    void write_measurement_binary(const ed::Measurement& msr,const std::string& node_name, std::ostream& out);
 }
 
 #endif // WORLD_WRITER_H

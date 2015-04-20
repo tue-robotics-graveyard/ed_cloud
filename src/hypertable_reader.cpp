@@ -197,7 +197,7 @@ void HypertableReaderPlugin::get_cell_publisher(Hypertable::ThriftGen::CellAsArr
 {
     if (cell[1] == ed_hypertable::MEASUREMENT_CELL) {
         std::istringstream iss(cell[3]);
-        iss >> publisher;
+        ed_cloud::read_publisher_binary(iss, publisher);
         ROS_INFO_STREAM("Publisher " << publisher);
     } else {
         ed::io::JSONReader reader(cell[3].c_str());

@@ -19,6 +19,7 @@ void read_type(ed::io::Reader& r, ed::TYPE& type);
 // Binary
 
 ed::MeasurementConstPtr read_measurement(std::istream& in);
+void read_publisher_binary(std::istream& in, std::string& publisher);
 
 }
 

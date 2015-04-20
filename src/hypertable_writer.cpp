@@ -275,10 +275,10 @@ void HypertableWriterPlugin::add_measurements(std::vector<Hypertable::ThriftGen:
         cell_as_array.push_back(it->first.str());
         cell_as_array.push_back(ed_hypertable::MEASUREMENT_CELL);
         cell_as_array.push_back("");
-        ed_cloud::write_publisher_binary(ros::this_node::getName(), str);
+        //ed_cloud::write_publisher_binary(ros::this_node::getName(), str);
 
         for (auto& measurement: it->second) {
-            ed_cloud::write_measurement_binary(*measurement, str);
+            ed_cloud::write_measurement_binary(*measurement, ros::this_node::getName(), str);
         }
 
         cell_as_array.push_back(str.str());

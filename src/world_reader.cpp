@@ -125,8 +125,10 @@ void read_type(ed::io::Reader &r, ed::TYPE& type)
 
 ed::MeasurementConstPtr read_measurement(std::istream& in)
 {
-    tue::serialization::InputArchive a_in(in);
+    std::string publisher;
 
+    tue::serialization::InputArchive a_in(in);
+    a_in >> publisher;
     rgbd::ImagePtr image(new rgbd::Image);
     rgbd::deserialize(a_in, *image);
 
@@ -140,6 +142,12 @@ ed::MeasurementConstPtr read_measurement(std::istream& in)
          >> p.R.zx >> p.R.zy >> p.R.zz;
 
     return ed::MeasurementConstPtr(new ed::Measurement(image, mask, p));
+}
+
+void read_publisher_binary(std::istream &in, std::string &publisher)
+{
+    tue::serialization::InputArchive a_in(in);
+    a_in >> publisher;
 }
 
 }

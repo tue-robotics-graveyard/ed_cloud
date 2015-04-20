@@ -151,9 +151,11 @@ void ed_cloud::write_type(const ed::TYPE &type, ed::io::Writer &w)
     w.writeValue("type", type);
 }
 
-void ed_cloud::write_measurement_binary(const ed::Measurement& msr, std::ostream& out)
+void ed_cloud::write_measurement_binary(const ed::Measurement& msr, const std::string& node_name, std::ostream& out)
 {
     tue::serialization::OutputArchive a_out(out);
+
+    a_out << node_name;
 
     // save image
     rgbd::serialize(*msr.image(), a_out);
