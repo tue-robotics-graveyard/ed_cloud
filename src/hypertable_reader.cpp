@@ -84,6 +84,7 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
         client->hql_query_as_arrays(result_as_arrays, ns, query.str());
 
         if (!result_as_arrays.cells.empty()) {
+     /*
             if (result_as_arrays.cells.size() == 1) {
                 // Code to detect strange phenomenon
                 std::cout << "ONLY ONE!" << result_as_arrays.cells[0][0] << "," <<
@@ -91,7 +92,7 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
                     "," << result_as_arrays.cells[0][3] <<  ", time = " << result_as_arrays.cells[0][4] <<
                 std::endl;
             }
-
+*/
             total_elements+=result_as_arrays.cells.size();
             ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
                             << " Elements, Total " << total_elements);
@@ -184,6 +185,9 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
         req.setType(entity_id, type);
     } else if (cell[1] == ed_hypertable::MEASUREMENT_CELL) {
         std::istringstream i_str(cell[3]);
+        if (cell[0] == "r-cube-4") {
+            ROS_INFO("One measurement of r-cube-4!");
+        }
         ed::MeasurementConstPtr measure = ed_cloud::read_measurement(i_str);
         req.addMeasurement(entity_id, measure);
     }
@@ -194,6 +198,7 @@ void HypertableReaderPlugin::get_cell_publisher(Hypertable::ThriftGen::CellAsArr
     if (cell[1] == ed_hypertable::MEASUREMENT_CELL) {
         std::istringstream iss(cell[3]);
         iss >> publisher;
+        ROS_INFO_STREAM("Publisher " << publisher);
     } else {
         ed::io::JSONReader reader(cell[3].c_str());
         ed_cloud::read_publisher(reader, publisher);

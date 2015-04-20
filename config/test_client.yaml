@@ -11,7 +11,8 @@ plugins:
         - property: pose
         - property: convex_hull
         - property: type
-  frequency: 20
+        - property: measurement
+  frequency: 1
 - name: hypertable_reader_plugin
   lib: libed_hypertable_reader_plugin.so
   parameters:
@@ -23,4 +24,5 @@ plugins:
         - property: pose
         - property: convex_hull
         - property: type
-  frequency: 20
+        - property: measurement
+  frequency: 1

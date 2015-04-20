@@ -65,6 +65,13 @@ void ed_cloud::write_entity(const ed::EntityConstPtr& ent, ed::io::Writer& w)
 
     if (!ent->convexHull().chull.empty())
         write_convex_hull(ent->convexHull(), w);
+
+    std::vector<ed::MeasurementConstPtr> measurements;
+    ent->measurements(measurements);
+
+    if (!measurements.empty()) {
+        write_measurements(measurements, w);
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -144,7 +151,7 @@ void ed_cloud::write_type(const ed::TYPE &type, ed::io::Writer &w)
     w.writeValue("type", type);
 }
 
-void ed_cloud::write_measurement(const ed::Measurement& msr, std::ostream& out)
+void ed_cloud::write_measurement_binary(const ed::Measurement& msr, std::ostream& out)
 {
     tue::serialization::OutputArchive a_out(out);
 
@@ -165,4 +172,57 @@ void ed_cloud::write_measurement(const ed::Measurement& msr, std::ostream& out)
 void ed_cloud::write_publisher_binary(const std::string &node_name, std::ostream &out)
 {
      out << node_name;
+}
+
+
+void ed_cloud::write_measurements(const std::vector<ed::MeasurementConstPtr>& measurements, ed::io::Writer &w)
+{
+    w.writeArray("measurements");
+
+    for (ed::MeasurementConstPtr measurement: measurements) {
+        w.addArrayItem();
+        w.writeGroup("measurement");
+
+        w.writeValue("frame_id", measurement->image()->getFrameId());
+
+        w.writeGroup("rgb_image");
+        const cv::Mat& rgb_image = measurement->image()->getRGBImage();
+        w.writeValue("cols", rgb_image.cols);
+        w.writeValue("rows", rgb_image.rows);
+        w.endGroup();
+
+        w.writeGroup("depth_image");
+        const cv::Mat& depth_image = measurement->image()->getDepthImage();
+        w.writeValue("cols", depth_image.cols);
+        w.writeValue("rows", depth_image.rows);
+        w.endGroup();
+
+//        w.writeGroup("camera_model");
+//        const image_geometry::PinholeCameraModel& camera_model =
+//                measurement->image()->cam_model_;
+//        w.writeValue("fx", camera_model.fx());
+//        w.writeValue("fy", camera_model.fy());
+//        w.writeValue("cx", camera_model.cx());
+//        w.writeValue("cy", camera_model.cy());
+//        w.writeValue("tx", camera_model.Tx());
+//        w.writeValue("ty", camera_model.Ty());
+//        w.endGroup();
+
+        w.writeGroup("sensor_pose");
+        const geo::Pose3D& sensor_pose = measurement->sensorPose();
+        w.writeValue("x", sensor_pose.t.x);
+        w.writeValue("y", sensor_pose.t.y);
+        w.endGroup();
+
+        w.writeGroup("mask");
+        const ed::ImageMask& image_mask = measurement->imageMask();
+        w.writeValue("height", image_mask.height());
+        w.writeValue("width", image_mask.width());
+        w.endGroup();
+
+        w.endGroup();
+
+        w.endArrayItem();
+    }
+    w.endArray();
 }

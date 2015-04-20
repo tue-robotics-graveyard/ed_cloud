@@ -15,13 +15,13 @@ namespace ed_cloud {
     void write_shape(const geo::Mesh& mesh, ed::io::Writer& w);
     void write_convex_hull(const ed::ConvexHull2D& ch, ed::io::Writer& w);
     void write_publisher(const std::string& node_name, ed::io::Writer& w);
-
+    void write_measurements(const std::vector<ed::MeasurementConstPtr> &measurements, ed::io::Writer& w);
     void write_type(const ed::TYPE &type, ed::io::Writer& w);
 
     // Binary
 
     void write_publisher_binary(const std::string& node_name, std::ostream& out);
-    void write_measurement(const ed::Measurement& msr, std::ostream& out);
+    void write_measurement_binary(const ed::Measurement& msr, std::ostream& out);
 }
 
 #endif // WORLD_WRITER_H
