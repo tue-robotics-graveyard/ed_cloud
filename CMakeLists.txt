@@ -5,6 +5,8 @@ find_package(catkin REQUIRED COMPONENTS
     ed
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 # ------------------------------------------------------------------------------------------------
 #                                     ROS MESSAGES AND SERVICES
 # ------------------------------------------------------------------------------------------------
@@ -68,7 +70,6 @@ add_dependencies(ed_sync_client_plugin ${PROJECT_NAME}_generate_messages_cpp ${P
 if(EXISTS /opt/hypertable/current/lib)
 
 #set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/hypertable/current/lib)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 LINK_DIRECTORIES(/opt/hypertable/current/lib)
 
 include_directories(
@@ -121,4 +122,8 @@ endif()
 
 add_library(ed_bouncing_cubes test/bouncing_cubes.cpp)
 target_link_libraries(ed_bouncing_cubes ${catkin_LIBRARIES})
+
+add_executable(ed_cloud_test_serialization test/test_serialization.cpp)
+target_link_libraries(ed_cloud_test_serialization ed_world_writer ed_world_reader ${catkin_LIBRARIES})
+
 
