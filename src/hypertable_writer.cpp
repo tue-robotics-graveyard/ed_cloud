@@ -54,10 +54,10 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
             std::map<std::string, Hypertable::ThriftGen::ColumnFamilySpec> cf_specs;
             Hypertable::ThriftGen::ColumnFamilySpec cf;
 
-            Hypertable::ThriftGen::ColumnFamilyOptions opts;
+            //Hypertable::ThriftGen::ColumnFamilyOptions opts;
 
-            opts.__set_max_versions(ed_hypertable::MAX_VERSIONS);
-            cf.__set_options(opts);
+           // opts.__set_max_versions(ed_hypertable::MAX_VERSIONS);
+            //cf.__set_options(opts);
 
             cf.__set_name(ed_hypertable::POSE_CELL);
             cf_specs[ed_hypertable::POSE_CELL] = cf;
@@ -72,8 +72,8 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
             cf.__set_name(ed_hypertable::SHAPE_CELL);
             cf_specs[ed_hypertable::SHAPE_CELL] = cf;
 
-            opts.__set_max_versions(0);
-            cf.__set_options(opts);
+            //opts.__set_max_versions(0);
+            //cf.__set_options(opts);
 
             cf.__set_name(ed_hypertable::MEASUREMENT_CELL);
             cf_specs[ed_hypertable::MEASUREMENT_CELL] = cf;
@@ -275,7 +275,6 @@ void HypertableWriterPlugin::add_measurements(std::vector<Hypertable::ThriftGen:
         cell_as_array.push_back(it->first.str());
         cell_as_array.push_back(ed_hypertable::MEASUREMENT_CELL);
         cell_as_array.push_back("");
-        //ed_cloud::write_publisher_binary(ros::this_node::getName(), str);
 
         for (auto& measurement: it->second) {
             ed_cloud::write_measurement_binary(*measurement, ros::this_node::getName(), str);

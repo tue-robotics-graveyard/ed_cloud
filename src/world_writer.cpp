@@ -158,7 +158,7 @@ void ed_cloud::write_measurement_binary(const ed::Measurement& msr, const std::s
     a_out << node_name;
 
     // save image
-    rgbd::serialize(*msr.image(), a_out);
+    rgbd::serialize(*msr.image(), a_out, rgbd::RGB_STORAGE_LOSSLESS, rgbd::DEPTH_STORAGE_LOSSLESS);
 
     // save mask
     ed::serialize(msr.imageMask(), a_out);
@@ -181,7 +181,7 @@ void ed_cloud::write_measurements(const std::vector<ed::MeasurementConstPtr>& me
 {
     w.writeArray("measurements");
 
-    for (ed::MeasurementConstPtr measurement: measurements) {
+    for (auto& measurement: measurements) {
         w.addArrayItem();
         w.writeGroup("measurement");
 
@@ -191,12 +191,36 @@ void ed_cloud::write_measurements(const std::vector<ed::MeasurementConstPtr>& me
         const cv::Mat& rgb_image = measurement->image()->getRGBImage();
         w.writeValue("cols", rgb_image.cols);
         w.writeValue("rows", rgb_image.rows);
+
+        std::stringstream data_rgbd;
+
+        for (int i = 0; i < rgb_image.rows; i ++) {
+            for (int j = 0; j < rgb_image.cols; j ++) {
+                cv::Vec3b pixel = rgb_image.at<cv::Vec3b>(i, j);
+                data_rgbd << std::setw(2) << std::hex << std::setfill('0') << (int)pixel[0];
+                data_rgbd << std::setw(2) << std::hex << std::setfill('0') << (int)pixel[1];
+                data_rgbd << std::setw(2) << std::hex << std::setfill('0') << (int)pixel[2];
+            }
+        }
+
+        w.writeValue("data", data_rgbd.str());
         w.endGroup();
 
         w.writeGroup("depth_image");
         const cv::Mat& depth_image = measurement->image()->getDepthImage();
         w.writeValue("cols", depth_image.cols);
         w.writeValue("rows", depth_image.rows);
+
+        std::stringstream data_depth;
+
+        for (int i = 0; i < depth_image.rows; i ++) {
+            for (int j = 0; j < depth_image.cols; j ++) {
+                float pixel = depth_image.at<float>(i, j);
+                data_depth << pixel << "|";
+            }
+        }
+
+        w.writeValue("data", data_depth.str());
         w.endGroup();
 
 //        w.writeGroup("camera_model");

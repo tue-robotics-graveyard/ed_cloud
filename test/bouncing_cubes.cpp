@@ -134,7 +134,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
     for (Cube& cube: cubes) {
     // Create rgb image
 
-        cv::Mat rgb_image(480, 640, CV_8UC3, cv::Scalar(0,0,255));
+        cv::Mat rgb_image(6, 6, CV_8UC3, cv::Scalar(0,0,255));
 
         for(int x = 0; x < rgb_image.cols; ++x)
 
@@ -150,7 +150,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
         // Create depth image
 
-        cv::Mat depth_image(480, 640, CV_32FC1, 0.0);
+        cv::Mat depth_image(6, 6, CV_32FC1, 0.0);
         for(int x = 0; x < rgb_image.cols; ++x)
 
         {
@@ -194,8 +194,8 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
         geo::Pose3D sensor_pose = geo::Pose3D::identity();
 
-        sensor_pose.t.x = (rand() % 10)/10 * cube.pose.t.x;
-        sensor_pose.t.y = (rand() % 10)/10 * cube.pose.t.y;
+        sensor_pose.t.x = (float)(rand() % 10)/10 + cube.pose.t.x;
+        sensor_pose.t.y = (float)(rand() % 10)/10 + cube.pose.t.y;
 
         // construct measurement
 

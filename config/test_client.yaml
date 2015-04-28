@@ -2,7 +2,7 @@ plugins:
 - name: hypertable_writer_plugin
   lib: libed_hypertable_writer_plugin.so
   parameters:
-      address: db.docker.wambacloud.com
+      address: 172.17.0.5
       port: 15867
       namespace: test
       stop: 10000
@@ -16,7 +16,7 @@ plugins:
 - name: hypertable_reader_plugin
   lib: libed_hypertable_reader_plugin.so
   parameters:
-      address: db.docker.wambacloud.com
+      address: 172.17.0.5
       port: 15867
       namespace: test
       read:
@@ -25,4 +25,4 @@ plugins:
         - property: convex_hull
         - property: type
         - property: measurement
-  frequency: 1
+  frequency: 2

@@ -102,14 +102,14 @@ int main(int argc, char **argv)
     // READING
 
     {
-        std::stringstream ss1(data);
+        std::istringstream ss1(data);
 
         std::string publisher;
         ed_cloud::read_publisher_binary(ss1, publisher);
 
         std::cout << "Publisher: " << publisher << std::endl;
 
-        std::stringstream ss2(data);
+        std::istringstream ss2(data);
 
         ed::MeasurementConstPtr m2 = ed_cloud::read_measurement(ss2);
 
