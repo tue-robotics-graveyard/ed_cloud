@@ -9,6 +9,7 @@
 
 #include <ed/serialization/serialization.h>
 #include <rgbd/serialization.h>
+#include <rgbd/View.h>
 #include <ed/measurement.h>
 
 // ----------------------------------------------------------------------------------------------------
@@ -216,23 +217,25 @@ void ed_cloud::write_measurements(const std::vector<ed::MeasurementConstPtr>& me
         for (int i = 0; i < depth_image.rows; i ++) {
             for (int j = 0; j < depth_image.cols; j ++) {
                 float pixel = depth_image.at<float>(i, j);
-                data_depth << pixel << "|";
+                data_depth << std::setw(4) << std::hex << std::setfill('0') << pixel;
             }
         }
 
         w.writeValue("data", data_depth.str());
         w.endGroup();
 
-//        w.writeGroup("camera_model");
-//        const image_geometry::PinholeCameraModel& camera_model =
-//                measurement->image()->cam_model_;
-//        w.writeValue("fx", camera_model.fx());
-//        w.writeValue("fy", camera_model.fy());
-//        w.writeValue("cx", camera_model.cx());
-//        w.writeValue("cy", camera_model.cy());
-//        w.writeValue("tx", camera_model.Tx());
-//        w.writeValue("ty", camera_model.Ty());
-//        w.endGroup();
+        w.writeGroup("camera_model");
+
+        rgbd::View view(*measurement->image(), measurement->image()->getDepthImage().cols);
+        const geo::DepthCamera& cam_model = view.getRasterizer();
+
+        w.writeValue("fx", cam_model.getFocalLengthX());
+        w.writeValue("fy", cam_model.getFocalLengthY());
+        w.writeValue("cx", cam_model.getOpticalCenterX());
+        w.writeValue("cy", cam_model.getOpticalCenterY());
+        w.writeValue("tx", cam_model.getOpticalTranslationX());
+        w.writeValue("ty", cam_model.getOpticalTranslationY());
+        w.endGroup();
 
         w.writeGroup("sensor_pose");
         const geo::Pose3D& sensor_pose = measurement->sensorPose();
@@ -244,6 +247,15 @@ void ed_cloud::write_measurements(const std::vector<ed::MeasurementConstPtr>& me
         const ed::ImageMask& image_mask = measurement->imageMask();
         w.writeValue("height", image_mask.height());
         w.writeValue("width", image_mask.width());
+
+        std::stringstream mask_str;
+
+        for (cv::Point2i mask_point: image_mask) {
+            mask_str << std::setw(4) << std::hex << std::setfill('0')
+                     << mask_point.x << mask_point.y;
+        }
+
+        w.writeValue("points", mask_str.str());
         w.endGroup();
 
         w.endGroup();

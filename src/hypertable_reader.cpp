@@ -26,10 +26,12 @@ HypertableReaderPlugin::~HypertableReaderPlugin() {
 
 void HypertableReaderPlugin::initialize(ed::InitData& init) {
     total_elements = 0;
-    max_timestamp_queried = max_timestamp_queried.fromNSec(0);
+    max_timestamp_queried_entities = max_timestamp_queried_entities.fromNSec(0);
+    max_timestamp_queried_measurements = max_timestamp_queried_measurements.fromNSec(0);
     init.config.value("address", db_address);
     init.config.value("port", db_port);
     init.config.value("namespace", db_namespace);
+    get_measurements = false;
 
     elements_to_read.insert(ed_hypertable::DELETED_CELL);
 
@@ -43,11 +45,16 @@ void HypertableReaderPlugin::initialize(ed::InitData& init) {
             std::string property_to_read;
             init.config.value("property", property_to_read);
             elements_to_read.insert(property_to_read);
-            select_columns_aux << "," << property_to_read;
+            if (property_to_read != ed_hypertable::MEASUREMENT_CELL) {
+                select_columns_aux << "," << property_to_read;
+            }
         }
     }
 
     select_columns = select_columns_aux.str();
+    if (elements_to_read.find(ed_hypertable::MEASUREMENT_CELL) != elements_to_read.end()) {
+        get_measurements = true;
+    }
 
     try {
         client = new Hypertable::Thrift::Client(db_address, db_port);
@@ -69,25 +76,16 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
 
-        std::stringstream query;
-
-        query << "SELECT " << select_columns << " FROM "
-              << ed_hypertable::ENTITY_TABLE_NAME
-              << " WHERE TIMESTAMP > "
-              << "\"" << get_timestamp_string(max_timestamp_queried) << "\""
-              << " MAX_VERSIONS = 1";
-
-        Hypertable::ThriftGen::HqlResultAsArrays result_as_arrays;
-
-        client->hql_query_as_arrays(result_as_arrays, ns, query.str());
-
-        if (!result_as_arrays.cells.empty()) {
-
-            total_elements+=result_as_arrays.cells.size();
-            ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
-                            << " Elements, Total " << total_elements);
-            process_cells(result_as_arrays.cells, req);
+        if (get_measurements) {
+            query_cloud_world_model(ns, ed_hypertable::MEASUREMENT_CELL,
+                                    ed_hypertable::MEASUREMENT_TABLE_NAME,
+                                    max_timestamp_queried_measurements, req);
         }
+
+        query_cloud_world_model(ns, select_columns,
+                                ed_hypertable::ENTITY_TABLE_NAME,
+                                max_timestamp_queried_entities, req);
+
 
         req.setSyncUpdate(true);
 
@@ -113,7 +111,7 @@ std::string HypertableReaderPlugin::get_timestamp_string(ros::Time &time)
 
 }
 
-void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::CellAsArray> &cells, ed::UpdateRequest& req)
+void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::CellAsArray> &cells, ros::Time &timestamp, ed::UpdateRequest& req)
 {
     ed::UUID current_entity;
     bool entity_removed = false;
@@ -147,7 +145,7 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
         }
     }
 
-    max_timestamp_queried = max_timestamp_queried.fromNSec(max_timestamp);
+    timestamp = timestamp.fromNSec(max_timestamp);
 }
 
 void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArray &cell, ed::UpdateRequest &req)
@@ -189,6 +187,34 @@ void HypertableReaderPlugin::get_cell_publisher(Hypertable::ThriftGen::CellAsArr
         ed::io::JSONReader reader(cell[3].c_str());
         ed_cloud::read_publisher(reader, publisher);
     }
+}
+
+void HypertableReaderPlugin::query_cloud_world_model(const Hypertable::ThriftGen::Namespace& ns, const std::string &columns, const std::string &table, ros::Time &timestamp, ed::UpdateRequest &req)
+{
+    std::stringstream query;
+
+    query << "SELECT " << columns << " FROM "
+          << table
+          << " WHERE TIMESTAMP > "
+          << "\"" << get_timestamp_string(timestamp) << "\"";
+
+    if (columns == ed_hypertable::MEASUREMENT_CELL) {
+        query << " MAX_VERSIONS = 1";
+    }
+
+    Hypertable::ThriftGen::HqlResultAsArrays result_as_arrays;
+
+    client->hql_query_as_arrays(result_as_arrays, ns, query.str());
+
+    if (!result_as_arrays.cells.empty()) {
+
+        total_elements+=result_as_arrays.cells.size();
+        ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
+                        << " Elements, Total " << total_elements);
+
+        process_cells(result_as_arrays.cells, timestamp, req);
+    }
+
 }
 
 ED_REGISTER_PLUGIN(HypertableReaderPlugin)

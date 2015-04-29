@@ -56,7 +56,7 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
 
             //Hypertable::ThriftGen::ColumnFamilyOptions opts;
 
-           // opts.__set_max_versions(ed_hypertable::MAX_VERSIONS);
+            //opts.__set_max_versions(ed_hypertable::MAX_VERSIONS);
             //cf.__set_options(opts);
 
             cf.__set_name(ed_hypertable::POSE_CELL);

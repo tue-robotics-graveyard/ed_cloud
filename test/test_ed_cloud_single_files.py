@@ -32,6 +32,7 @@ failPose = 0;
 failShapeTriangles = 0;
 failShapeVertices = 0;
 failConvexHulls = 0;
+failMeasurements = 0;
 failTypes = 0;
 
 # simple version for working with CWD
@@ -82,6 +83,10 @@ if (os.path.isfile(file_name_server)):
             failShapeTriangles+= 1
             success = False
 
+        if (tester.testMeasurements()):
+            failMeasurements+= 1
+            success = False
+
         if (not success):
             num_files_failed+= 1
             if (args.verbose == True):
@@ -100,10 +105,11 @@ print("=== General Statistics ===")
 print("Total Tests: "  + str(num_files_tested))
 print("Tests Failed: " + str(num_files_failed))
 print("=== Detailed Statistics ===")
-print("Rev. Number Test: " + str(num_files_tested - failRevNum) + "/" + str(num_files_tested))
-print("Ent. Number Test: " + str(num_files_tested - failEntNum) + "/" + str(num_files_tested))
-print("Ent. Type Test:   " + str(num_files_tested - failTypes) + "/"  + str(num_files_tested))
-print("Pose Test:        " + str(num_files_tested - failPose) + "/" + str(num_files_tested))
-print("Convex Hull Test: " + str(num_files_tested - failConvexHulls) + "/"+ str(num_files_tested))
-print("Shape Vert. Test: " + str(num_files_tested - failShapeVertices) +"/"+  str(num_files_tested))
-print("Shape Trng. Test: " + str(num_files_tested - failShapeTriangles) + "/"+ str(num_files_tested))
+print("Rev. Number Test:  " + str(num_files_tested - failRevNum) + "/" + str(num_files_tested))
+print("Ent. Number Test:  " + str(num_files_tested - failEntNum) + "/" + str(num_files_tested))
+print("Ent. Type Test:    " + str(num_files_tested - failTypes) + "/"  + str(num_files_tested))
+print("Pose Test:         " + str(num_files_tested - failPose) + "/" + str(num_files_tested))
+print("Convex Hull Test:  " + str(num_files_tested - failConvexHulls) + "/"+ str(num_files_tested))
+print("Shape Vert. Test:  " + str(num_files_tested - failShapeVertices) +"/"+  str(num_files_tested))
+print("Shape Trng. Test:  " + str(num_files_tested - failShapeTriangles) + "/"+ str(num_files_tested))
+print("Measurements Test: " + str(num_files_tested - failMeasurements) + "/"+ str(num_files_tested))

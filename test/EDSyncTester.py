@@ -266,3 +266,36 @@ class EDSyncTester:
 
 
         return error
+
+    def testMeasurements(self):
+
+        self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Measurement Test]"+ " BEGIN")
+
+        error = False
+
+        entity_measurement_server = dict()
+        entity_measurement_client = dict()
+
+        for entity in self.server_tree["entities"]:
+            if ("measurements" in entity):
+                entity_measurement_server[entity["id"]] = entity["measurements"]
+
+        for entity in self.client_tree["entities"]:
+            if ("measurements" in entity):
+                entity_measurement_client[entity["id"]] = entity["measurements"]
+
+        for (id, measurements) in entity_measurement_server.items():
+            if id in entity_measurement_client and measurements != entity_measurement_client[id]:
+                self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Measurement Test]"+
+                "[ERROR] Inconsistent measurement for instance id = " + str(id) +
+                ", " + "\"" + str(measurements) + "\"" + " != " + "\"" + str(entity_measurement_client[id]) + "\"")
+                error = True
+
+        if (error == False):
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Measurement Test]"+ " SUCCESS")
+        else:
+            self.verbosePrint("[Rev. " + str(self.server_tree["revision"]) + "]"+ "[Measurement Test]"+ " FAILED")
+
+
+        return error
+
