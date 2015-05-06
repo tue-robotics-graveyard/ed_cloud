@@ -279,10 +279,12 @@ class EDSyncTester:
         for entity in self.server_tree["entities"]:
             if ("measurements" in entity):
                 entity_measurement_server[entity["id"]] = entity["measurements"]
+                entity_measurement_server[entity["id"]].sort()
 
         for entity in self.client_tree["entities"]:
             if ("measurements" in entity):
                 entity_measurement_client[entity["id"]] = entity["measurements"]
+                entity_measurement_client[entity["id"]].sort()
 
         for (id, measurements) in entity_measurement_server.items():
             if id in entity_measurement_client and measurements != entity_measurement_client[id]:

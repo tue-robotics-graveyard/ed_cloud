@@ -53,6 +53,9 @@ private:
     std::set<std::string> elements_to_read;
     std::string select_columns;
     bool get_measurements;
+
+    // workaround
+    std::set<std::string> deleted_entities;
 };
 
 #endif

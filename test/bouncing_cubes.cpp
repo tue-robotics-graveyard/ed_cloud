@@ -31,6 +31,9 @@ void BouncingCubes::configure(tue::Configuration config)
     config.value("num_cubes", num_cubes_);
     config.value("ns", ns);
     config.value("stop", stop);
+    config.value("measurement_width", measurement_width);
+    config.value("measurement_height", measurement_height);
+
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -135,7 +138,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
         if (removed_entities.find(cube.id) == removed_entities.end()) {
             // Create rgb image
-            cv::Mat rgb_image(6, 6, CV_8UC3, cv::Scalar(0,0,255));
+            cv::Mat rgb_image(measurement_height, measurement_width, CV_8UC3, cv::Scalar(0,0,255));
 
             for(int x = 0; x < rgb_image.cols; ++x)
 
@@ -151,7 +154,7 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
             // Create depth image
 
-            cv::Mat depth_image(6, 6, CV_32FC1, 0.0);
+            cv::Mat depth_image(measurement_height, measurement_width, CV_32FC1, 0.0);
             for(int x = 0; x < rgb_image.cols; ++x)
 
             {

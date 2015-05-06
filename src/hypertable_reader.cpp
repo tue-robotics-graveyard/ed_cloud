@@ -76,16 +76,16 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
 
+        query_cloud_world_model(ns, select_columns,
+                                ed_hypertable::ENTITY_TABLE_NAME,
+                                max_timestamp_queried_entities, req);
+
+
         if (get_measurements) {
             query_cloud_world_model(ns, ed_hypertable::MEASUREMENT_CELL,
                                     ed_hypertable::MEASUREMENT_TABLE_NAME,
                                     max_timestamp_queried_measurements, req);
         }
-
-        query_cloud_world_model(ns, select_columns,
-                                ed_hypertable::ENTITY_TABLE_NAME,
-                                max_timestamp_queried_entities, req);
-
 
         req.setSyncUpdate(true);
 
@@ -131,13 +131,15 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
         get_cell_publisher(cell, publisher);
 
         if (publisher == ros::this_node::getName() ||
-                (current_entity == cell[0] && entity_removed)) {
+                (current_entity == cell[0] && entity_removed)
+                || deleted_entities.find(cell[0]) != deleted_entities.end()) {
             continue;
         } else {
             entity_removed = false;
             current_entity = cell[0];
             if (cell[1] == ed_hypertable::DELETED_CELL) {
                 entity_removed = true;
+                deleted_entities.insert(cell[0]);
                 req.removeEntity(current_entity);
             } else {
                 add_to_world_model(cell, req);
@@ -198,7 +200,7 @@ void HypertableReaderPlugin::query_cloud_world_model(const Hypertable::ThriftGen
           << " WHERE TIMESTAMP > "
           << "\"" << get_timestamp_string(timestamp) << "\"";
 
-    if (columns == ed_hypertable::MEASUREMENT_CELL) {
+    if (columns != ed_hypertable::MEASUREMENT_CELL) {
         query << " MAX_VERSIONS = 1";
     }
 
@@ -207,14 +209,11 @@ void HypertableReaderPlugin::query_cloud_world_model(const Hypertable::ThriftGen
     client->hql_query_as_arrays(result_as_arrays, ns, query.str());
 
     if (!result_as_arrays.cells.empty()) {
-
         total_elements+=result_as_arrays.cells.size();
         ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
                         << " Elements, Total " << total_elements);
-
         process_cells(result_as_arrays.cells, timestamp, req);
     }
-
 }
 
 ED_REGISTER_PLUGIN(HypertableReaderPlugin)
