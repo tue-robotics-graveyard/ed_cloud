@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ed_cloud)
 find_package(catkin REQUIRED COMPONENTS
     ed
+    blackboard
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -121,6 +122,9 @@ endif()
 
 add_library(ed_bouncing_cubes test/bouncing_cubes.cpp)
 target_link_libraries(ed_bouncing_cubes ${catkin_LIBRARIES})
+
+add_library(blackboard_test_plugin test/blackboard_test_plugin.cpp)
+target_link_libraries(blackboard_test_plugin ${catkin_LIBRARIES})
 
 add_executable(ed_cloud_test_serialization test/test_serialization.cpp)
 target_link_libraries(ed_cloud_test_serialization ed_world_writer ed_world_reader ${catkin_LIBRARIES})

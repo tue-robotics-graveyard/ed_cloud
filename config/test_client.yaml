@@ -1,28 +1,8 @@
+externals:
+- name: amigo
 plugins:
-- name: hypertable_writer_plugin
-  lib: libed_hypertable_writer_plugin.so
-  parameters:
-      address: 172.17.0.1
-      port: 15867
-      namespace: test
-      stop: 1000
-      write:
-        - property: shape
-        - property: pose
-        - property: convex_hull
-        - property: type
-        - property: measurement
+- name: blackboard_test_plugin
+  lib: libblackboard_test_plugin.so
   frequency: 5
-- name: hypertable_reader_plugin
-  lib: libed_hypertable_reader_plugin.so
   parameters:
-      address: 172.17.0.1
-      port: 15867
-      namespace: test
-      read:
-        - property: shape
-        - property: pose
-        - property: convex_hull
-        - property: type
-        - property: measurement
-  frequency: 5
+    reader: 1
