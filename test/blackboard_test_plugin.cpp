@@ -1,6 +1,7 @@
 #include "blackboard_test_plugin.h"
 #include <ros/ros.h>
 #include <ed/update_request.h>
+#include <blackboard/blackboard.h>
 
 BlackboardTestPlugin::BlackboardTestPlugin()
 {

@@ -2,6 +2,8 @@
 #define BLACKBOARDTESTPLUGIN_H
 
 #include <ed/plugin.h>
+#include <ros/ros.h>
+#include <blackboard/serializer.h>
 
 class BlackboardTestPlugin : public ed::Plugin
 {
