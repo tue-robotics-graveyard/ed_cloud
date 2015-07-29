@@ -49,22 +49,27 @@ catkin_package(
 # ------------------------------------------------------------------------------------------------
 
 include_directories(
-	include
+    include
     ${catkin_INCLUDE_DIRS}
 )
 
 add_library(ed_world_writer src/world_writer.cpp)
 add_library(ed_world_reader src/world_reader.cpp)
-add_library(ed_sync_server_plugin src/sync_server_plugin.cpp)
-add_library(ed_sync_client_plugin src/sync_client_plugin.cpp)
-target_link_libraries(ed_sync_server_plugin ed_world_writer)
-target_link_libraries(ed_sync_client_plugin ed_world_writer)
-
-add_dependencies(ed_sync_server_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
-add_dependencies(ed_sync_client_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
 
 # ------------------------------------------------------------------------------------------------
-#                                            HYPERTABLE PLUGINS
+#                                     PEER-TO-PEER SYNC PLUGINS
+# ------------------------------------------------------------------------------------------------
+
+#add_library(ed_sync_server_plugin src/sync_server_plugin.cpp)
+#add_library(ed_sync_client_plugin src/sync_client_plugin.cpp)
+#target_link_libraries(ed_sync_server_plugin ed_world_writer)
+#target_link_libraries(ed_sync_client_plugin ed_world_writer)
+
+#add_dependencies(ed_sync_server_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
+#add_dependencies(ed_sync_client_plugin ${PROJECT_NAME}_generate_messages_cpp ${PROJECT_NAME}_gencpp)
+
+# ------------------------------------------------------------------------------------------------
+#                                         HYPERTABLE PLUGINS
 # ------------------------------------------------------------------------------------------------
 
 if(EXISTS /opt/hypertable/current/lib)
@@ -77,42 +82,29 @@ include_directories(
     /opt/hypertable/current/include/thrift
 )
 
+file(GLOB hypertable_LIBRARIES /opt/hypertable/current/lib/*.a /opt/hypertable/current/lib/*.so)
+
+#set(hypertable_LIBRARIES
+#    /opt/hypertable/current/lib/libHyperThrift.a
+#    /opt/hypertable/current/lib/libHyperCommon.a
+#    /opt/hypertable/current/lib/libHypertable.a
+#    /opt/hypertable/current/lib/libthrift.so
+#    /opt/hypertable/current/lib/libevent.so
+#    /opt/hypertable/current/lib/libboost_system.so
+#    /opt/hypertable/current/lib/libboost_program_options.so
+#    /opt/hypertable/current/lib/libboost_filesystem.so
+#    /opt/hypertable/current/lib/libsigar-amd64-linux.so
+#    /opt/hypertable/current/lib/libre2.so
+#    /opt/hypertable/current/lib/libcurses.so
+#    /opt/hypertable/current/lib/libtcmalloc_minimal.so
+#    /opt/hypertable/current/lib/libstdc++.so
+#)
+
 add_library(ed_hypertable_writer_plugin src/hypertable_writer.cpp)
-add_library(ed_hypertable_reader_plugin src/hypertable_reader.cpp)
+target_link_libraries(ed_hypertable_writer_plugin ${hypertable_LIBRARIES} ed_world_writer)
 
-target_link_libraries(ed_hypertable_writer_plugin
-    /opt/hypertable/current/lib/libHyperThrift.a
-    /opt/hypertable/current/lib/libHyperCommon.a
-    /opt/hypertable/current/lib/libHypertable.a
-    /opt/hypertable/current/lib/libthrift.so
-    /opt/hypertable/current/lib/libevent.so
-    /opt/hypertable/current/lib/libboost_system.so
-    /opt/hypertable/current/lib/libboost_program_options.so
-    /opt/hypertable/current/lib/libboost_filesystem.so
-    /opt/hypertable/current/lib/libsigar-amd64-linux.so
-    /opt/hypertable/current/lib/libre2.so
-    /opt/hypertable/current/lib/libcurses.so
-    /opt/hypertable/current/lib/libtcmalloc_minimal.so
-    /opt/hypertable/current/lib/libstdc++.so
-    ed_world_writer)
-
-target_link_libraries(ed_hypertable_reader_plugin
-    /opt/hypertable/current/lib/libHyperThrift.a
-    /opt/hypertable/current/lib/libHyperCommon.a
-    /opt/hypertable/current/lib/libHypertable.a
-    /opt/hypertable/current/lib/libthrift.so
-    /opt/hypertable/current/lib/libevent.so
-    /opt/hypertable/current/lib/libboost_system.so
-    /opt/hypertable/current/lib/libboost_program_options.so
-    /opt/hypertable/current/lib/libboost_filesystem.so
-    /opt/hypertable/current/lib/libsigar-amd64-linux.so
-    /opt/hypertable/current/lib/libre2.so
-    /opt/hypertable/current/lib/libcurses.so
-    /opt/hypertable/current/lib/libtcmalloc_minimal.so
-    /opt/hypertable/current/lib/libstdc++.so
-    ed_world_reader
-    ed_world_writer
-)
+add_library(ed_hypertable_reader_plugin src/hypertable_reader.cpp src/hypertable_writer.cpp)
+target_link_libraries(ed_hypertable_reader_plugin ${hypertable_LIBRARIES} ed_world_reader ed_world_writer)
 
 endif()
 
@@ -123,8 +115,8 @@ endif()
 add_library(ed_bouncing_cubes test/bouncing_cubes.cpp)
 target_link_libraries(ed_bouncing_cubes ${catkin_LIBRARIES})
 
-add_library(blackboard_test_plugin test/blackboard_test_plugin.cpp)
-target_link_libraries(blackboard_test_plugin ${catkin_LIBRARIES})
+#add_library(blackboard_test_plugin test/blackboard_test_plugin.cpp)
+#target_link_libraries(blackboard_test_plugin ${catkin_LIBRARIES})
 
 add_executable(ed_cloud_test_serialization test/test_serialization.cpp)
 target_link_libraries(ed_cloud_test_serialization ed_world_writer ed_world_reader ${catkin_LIBRARIES})

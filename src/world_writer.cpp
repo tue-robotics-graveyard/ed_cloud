@@ -64,8 +64,8 @@ void ed_cloud::write_entity(const ed::EntityConstPtr& ent, ed::io::Writer& w)
     if (ent->shape())
         write_shape(ent->shape()->getMesh(), w);
 
-    if (!ent->convexHull().chull.empty())
-        write_convex_hull(ent->convexHull(), w);
+    if (!ent->convexHullMap().empty())
+        write_convex_hull_map(ent->convexHullMap(), w);
 
     std::vector<ed::MeasurementConstPtr> measurements;
     ent->measurements(measurements);
@@ -120,37 +120,69 @@ void ed_cloud::write_pose(const geo::Pose3D &pose, ed::io::Writer& w)
 
 // ----------------------------------------------------------------------------------------------------
 
-void ed_cloud::write_convex_hull(const ed::ConvexHull2D &ch, ed::io::Writer& w)
+void ed_cloud::write_timestamp(double timestamp, ed::io::Writer& w)
 {
-    w.writeGroup("convex_hull");
-
-    w.writeGroup("center");
-    w.writeValue("x", ch.center_point.x);
-    w.writeValue("y", ch.center_point.y);
-    w.writeValue("z", ch.center_point.z);
-    w.endGroup();
-
-    w.writeValue("z_min", ch.min_z);
-    w.writeValue("z_max", ch.max_z);
-
-    w.writeArray("points");
-    for(unsigned int i = 0; i <  ch.chull.size(); ++i)
-    {
-        w.addArrayItem();
-        w.writeValue("x", ch.chull[i].x);
-        w.writeValue("y", ch.chull[i].y);
-        w.endArrayItem();
-    }
-    w.endArray();
-
+    w.writeValue("sec", (int)timestamp);
+    w.writeValue("nsec", (int)((timestamp - (int)timestamp) * 1e9));
     w.endGroup();
 }
 
+// ----------------------------------------------------------------------------------------------------
+
+void ed_cloud::write_convex_hull_map(const std::map<std::string, ed::MeasurementConvexHull>& convex_hull_map, ed::io::Writer& w)
+{
+    w.writeArray("convex_hulls");
+    for(const auto& it : convex_hull_map)
+    {
+        w.addArrayItem();
+
+        const std::string& source_id = it.first;
+        const ed::MeasurementConvexHull& m = it.second;
+        write_convex_hull(m, source_id, w);
+
+        w.endArrayItem();
+    }
+    w.endArray();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ed_cloud::write_convex_hull(const ed::MeasurementConvexHull& ch, const std::string& source_id, ed::io::Writer& w)
+{
+    // Write source id
+    w.writeValue("source_id", source_id);
+
+    // Write convex hull pose
+    write_pose(ch.pose, w);
+
+    // Write timestamp
+    w.writeGroup("timestamp");
+    write_timestamp(ch.timestamp, w);
+    w.endGroup();
+
+    // Write convex hull itself
+    w.writeValue("z_min", ch.convex_hull.z_min);
+    w.writeValue("z_max", ch.convex_hull.z_max);
+
+    w.writeArray("points");
+    for(unsigned int i = 0; i < ch.convex_hull.points.size(); ++i)
+    {
+        w.addArrayItem();
+        w.writeValue("x", ch.convex_hull.points[i].x);
+        w.writeValue("y", ch.convex_hull.points[i].y);
+        w.endArrayItem();
+    }
+    w.endArray();
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_type(const ed::TYPE &type, ed::io::Writer &w)
 {
     w.writeValue("type", type);
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_measurement_binary(const ed::Measurement& msr, const std::string& node_name, std::ostream& out)
 {
@@ -171,12 +203,14 @@ void ed_cloud::write_measurement_binary(const ed::Measurement& msr, const std::s
           << p.R.zx << p.R.zy << p.R.zz;
 }
 
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_publisher_binary(const std::string &node_name, std::ostream &out)
 {
      out << node_name;
 }
 
+// ----------------------------------------------------------------------------------------------------
 
 void ed_cloud::write_measurements(const std::vector<ed::MeasurementConstPtr>& measurements, ed::io::Writer &w)
 {

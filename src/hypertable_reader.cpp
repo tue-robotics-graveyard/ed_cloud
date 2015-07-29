@@ -166,9 +166,10 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
         shape->setMesh(mesh);
         req.setShape(entity_id, shape);
     }  else if (cell[1] == ed_hypertable::CONVEX_HULL_CELL) {
-        ed::ConvexHull2D ch;
-        ed_cloud::read_convex_hull(reader, ch);
-        req.setConvexHull(entity_id, ch);
+        std::string source_id;
+        ed::MeasurementConvexHull ch;
+        ed_cloud::read_convex_hull(reader, ch, source_id);
+        req.setConvexHullNew(entity_id, ch.convex_hull, ch.pose, ch.timestamp, source_id);
     } else if (cell[1] == ed_hypertable::TYPE_CELL) {
         ed::TYPE type;
         ed_cloud::read_type(reader, type);

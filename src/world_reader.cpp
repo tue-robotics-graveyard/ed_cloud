@@ -40,6 +40,17 @@ void read_pose(ed::io::Reader& r, geo::Pose3D& pose)
 
 // ----------------------------------------------------------------------------------------------------
 
+void read_timestamp(ed::io::Reader& r, double& timestamp)
+{
+    int sec, nsec;
+    r.readValue("sec", sec);
+    r.readValue("nsec", nsec);
+
+    timestamp = sec + (double)nsec / 1e9;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 void read_shape(ed::io::Reader& r, geo::Mesh& mesh)
 {
     if (!r.readGroup("shape"))
@@ -80,21 +91,22 @@ void read_shape(ed::io::Reader& r, geo::Mesh& mesh)
 
 // ----------------------------------------------------------------------------------------------------
 
-void read_convex_hull(ed::io::Reader& r, ed::ConvexHull2D& ch)
+void read_convex_hull(ed::io::Reader& r, ed::MeasurementConvexHull& ch, std::string& source_id)
 {
-    if (!r.readGroup("convex_hull"))
-        return;
+    // Read source id
+    r.readValue("source_id", source_id);
 
-    if (r.readGroup("center"))
-    {
-        r.readValue("x", ch.center_point.x);
-        r.readValue("y", ch.center_point.y);
-        r.readValue("z", ch.center_point.z);
-        r.endGroup();
-    }
+    // Read convex hull pose
+    read_pose(r, ch.pose);
 
-    r.readValue("z_min", ch.min_z);
-    r.readValue("z_max", ch.max_z);
+    // Read timestamp
+    r.readGroup("timestamp");
+    read_timestamp(r, ch.timestamp);
+    r.endGroup();
+
+    // Read convex hull itself
+    r.readValue("z_min", ch.convex_hull.z_min);
+    r.readValue("z_max", ch.convex_hull.z_max);
 
     if (r.readArray("points"))
     {
@@ -103,7 +115,7 @@ void read_convex_hull(ed::io::Reader& r, ed::ConvexHull2D& ch)
             double x, y;
             r.readValue("x", x);
             r.readValue("y", y);
-            ch.chull.push_back(pcl::PointXYZ(x, y, 0));
+            ch.convex_hull.points.push_back(geo::Vec2f(x, y));
         }
         r.endArray();
     }
@@ -111,10 +123,14 @@ void read_convex_hull(ed::io::Reader& r, ed::ConvexHull2D& ch)
     r.endGroup();
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void read_publisher(ed::io::Reader &r, std::string publisher)
 {
     r.readValue("publisher", publisher);
 }
+
+// ----------------------------------------------------------------------------------------------------
 
 void read_type(ed::io::Reader &r, ed::TYPE& type)
 {

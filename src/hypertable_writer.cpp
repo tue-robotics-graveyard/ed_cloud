@@ -187,16 +187,18 @@ void HypertableWriterPlugin::add_shapes(std::vector<Hypertable::ThriftGen::CellA
 void HypertableWriterPlugin::add_convex_hulls(std::vector<Hypertable::ThriftGen::CellAsArray> &cells_as_arrays, ed::UpdateRequest &req)
 {
 
-    for (auto it = req.convex_hulls.begin();
-         it != req.convex_hulls.end(); it++) {
+    for (const auto& it : req.convex_hulls_new)
+    {
+        const std::map<std::string, ed::MeasurementConvexHull>& convex_hull_map = it.second;
+
         std::stringstream str;
         Hypertable::ThriftGen::CellAsArray cell_as_array;
-        cell_as_array.push_back(it->first.str());
+        cell_as_array.push_back(it.first.str());
         cell_as_array.push_back(ed_hypertable::CONVEX_HULL_CELL);
         cell_as_array.push_back("");
         ed::io::JSONWriter wr(str);
         ed_cloud::write_publisher(ros::this_node::getName(), wr);
-        ed_cloud::write_convex_hull(it->second, wr);
+        ed_cloud::write_convex_hull_map(convex_hull_map, wr);
         wr.endGroup();
         cell_as_array.push_back(str.str());
         cells_as_arrays.push_back(cell_as_array);
