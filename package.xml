@@ -13,4 +13,10 @@
   <build_depend>ed</build_depend>
   <run_depend>ed</run_depend>
 
+
+  <!-- SIMULATION -->
+
+  <run_depend>fast_simulator</run_depend>
+  <run_depend>fast_simulator_data</run_depend>
+
 </package>

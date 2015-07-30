@@ -1,0 +1,25 @@
+objects:
+  - id: walls
+    type: cloud_experiments/scenario1
+    pose: {x: 0, y: 0, z: 0, yaw: 0}
+  - id: kinect1
+    type: kinect
+    pose: {x: -6.9, y: 0.9, z: 2, roll: -2.2, yaw: -2.5}
+    topic: /kinect1/image
+    frame: /kinect1
+  - id: kinect2
+    type: kinect
+    pose: {x: 6.9, y: 0.9, z: 2, roll: -2.2, yaw: 2.5}
+    topic: /kinect2/image
+    frame: /kinect2
+  - id: kinect3
+    type: kinect
+    pose: {x: -6.9, y: -7.9, z: 2, roll: -2.2, yaw: -1}
+    topic: /kinect3/image
+    frame: /kinect3
+  - id: kinect4
+    type: kinect
+    pose: {x: 6.9, y: -7.9, z: 2, roll: -2.2, yaw: 1}
+    topic: /kinect4/image
+    frame: /kinect4
+
