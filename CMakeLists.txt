@@ -103,7 +103,7 @@ file(GLOB hypertable_LIBRARIES /opt/hypertable/current/lib/*.a /opt/hypertable/c
 add_library(ed_hypertable_writer_plugin src/hypertable_writer.cpp)
 target_link_libraries(ed_hypertable_writer_plugin ${hypertable_LIBRARIES} ed_world_writer)
 
-add_library(ed_hypertable_reader_plugin src/hypertable_reader.cpp src/hypertable_writer.cpp)
+add_library(ed_hypertable_reader_plugin src/hypertable_reader.cpp)
 target_link_libraries(ed_hypertable_reader_plugin ${hypertable_LIBRARIES} ed_world_reader ed_world_writer)
 
 endif()

@@ -1,8 +1,6 @@
 world_name: cloud_experiments/scenario1
 
 plugins:
-  - name: gui_server
-    lib: libed_gui_server_plugin.so
   - name: kinect_integration1
     lib: libed_kinect2_plugin.so
     enabled: 1

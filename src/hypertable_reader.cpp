@@ -97,7 +97,7 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
 
 std::string HypertableReaderPlugin::get_timestamp_string(ros::Time &time)
 {
-    int64_t  date_msb, date_lsb;
+    long  date_msb, date_lsb;
     char timestamp[100];
     date_msb = time.sec;
     date_lsb = time.nsec;
