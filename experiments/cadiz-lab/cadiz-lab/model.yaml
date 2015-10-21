@@ -1,0 +1,35 @@
+composition:
+- id: walls
+  shape:
+    heightmap:
+      image: $(file walls_cadiz_lab.pgm)
+      height: 4
+      resolution: 0.04
+      pose: { x: 0, y: 0, z: 0 }
+- id: wardrobe_left1
+  type: wardrobe
+  pose: { x: 0.4, y: 3.8, z: 0, Z: 1.57  }
+- id: longtable1
+  type: longtable
+  pose: { x: 0.2, y: 5, z: 0 }
+- id: wardrobe_left2
+  type: wardrobe
+  pose: { x: 0.4, y: 6.2, z: 0, Z: 1.57  }
+- id: longtable2
+  type: longtable
+  pose: { x: 0.2, y: 7.3, z: 0 }
+- id: regular_table_left1
+  type: regular_table
+  pose: { x: 0.6, y: 8.8, z: 0}
+- id: regular_table_left2
+  type: regular_table
+  pose: { x: 0.6, y: 10.2, z: 0}
+- id: regular_table_left3
+  type: regular_table
+  pose: { x: 0.6, y: 11.6, z: 0}
+- id: regular_table_left4
+  type: regular_table
+  pose: { x: 0.6, y: 13.0, z: 0}
+- id: hexagonal_table1
+  type: hexagonal_table
+  pose: { x: 2.3, y: 11, z: 0, Z: 1.57 }
