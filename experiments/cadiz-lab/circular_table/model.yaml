@@ -1,0 +1,18 @@
+shape:
+  group:
+  - cylinder:
+      height: 0.02
+      radius: 0.88
+      pose: {x: 0, y: 0, z: 0.74}
+  - box:
+      pose: {x: -0.2375, y: -0.685, z: 0.37}
+      size: {x: 0.03, y: 0.03, z: 0.74}
+  - box:
+      pose: {x: 0.2375, y: -0.685, z: 0.37}
+      size: {x: 0.03, y: 0.03, z: 0.74}
+  - box:
+      pose: {x: -0.2375, y: 0.685, z: 0.37}
+      size: {x: 0.03, y: 0.03, z: 0.74}
+  - box:
+      pose: {x: 0.2375, y: 0.685, z: 0.37}
+      size: {x: 0.03, y: 0.03, z: 0.74}
