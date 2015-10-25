@@ -33,3 +33,18 @@ composition:
 - id: hexagonal_table1
   type: hexagonal_table
   pose: { x: 2.3, y: 11, z: 0, Z: 1.57 }
+- id: regular_table_top1
+  type: regular_table
+  pose: { x: 1.1, y: 14.0, z: 0, Z: 1.57}
+- id: regular_table_top2
+  type: regular_table
+  pose: { x: 3.1, y: 14.0, z: 0, Z: 1.57}
+- id: regular_table_top3
+  type: regular_table
+  pose: { x: 4.5, y: 14.0, z: 0, Z: 1.57}
+- id: regular_table_top4
+  type: regular_table
+  pose: { x: 6.0, y: 14.0, z: 0, Z: 1.57}
+- id: wardrobe_right1
+  type: wardrobe
+  pose: { x: 7.4, y: 6.2, z: 0, Z: -1.57  }
