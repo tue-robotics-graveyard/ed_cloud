@@ -7,97 +7,110 @@ composition:
       resolution: 0.04
       pose: { x: 0, y: 0, z: 0 }
 - id: wardrobe_left1
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 0.4, y: 3.8, z: 0, Z: 1.57  }
 - id: longtable1
-  type: longtable
+  type: longtable_over
   pose: { x: 0.3, y: 5, z: 0 }
 - id: wardrobe_left2
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 0.4, y: 6.2, z: 0, Z: 1.57  }
 - id: longtable2
-  type: longtable
+  type: longtable_over
   pose: { x: 0.3, y: 7.3, z: 0 }
 - id: regular_table_left1
-  type: regular_table
+  type: regular_table_over
   pose: { x: 0.6, y: 8.8, z: 0}
 - id: regular_table_left2
-  type: regular_table
+  type: regular_table_over
   pose: { x: 0.6, y: 10.2, z: 0}
 - id: regular_table_left3
-  type: regular_table
+  type: regular_table_over
   pose: { x: 0.6, y: 11.6, z: 0}
 - id: regular_table_left4
-  type: regular_table
+  type: regular_table_over
   pose: { x: 0.6, y: 13.0, z: 0}
 - id: hexagonal_table1
-  type: hexagonal_table
+  type: hexagonal_table_over
   pose: { x: 2.3, y: 11, z: 0, Z: 1.57 }
 
 - id: regular_table_top1
-  type: regular_table
+  type: regular_table_over
   pose: { x: 1.1, y: 14.0, z: 0, Z: 1.57}
 - id: regular_table_top2
-  type: regular_table
+  type: regular_table_over
   pose: { x: 2.5, y: 14.0, z: 0, Z: 1.57}
 - id: regular_table_top3
-  type: regular_table
+  type: regular_table_over
   pose: { x: 3.9, y: 14.0, z: 0, Z: 1.57}
 - id: regular_table_top4
-  type: regular_table
+  type: regular_table_over
   pose: { x: 5.3, y: 14.0, z: 0, Z: 1.57}
 - id: regular_table_top5
-  type: regular_table
+  type: regular_table_over
   pose: { x: 6.7, y: 14.0, z: 0, Z: 1.57}
 
 - id: wardrobe_right1
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 12.9, z: 0, Z: -1.57  }
 
 - id: wardrobe_right2
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 11.5, z: 0, Z: -1.57  }
 - id: wardrobe_right3
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 10.6, z: 0, Z: -1.57  }
 
 - id: wardrobe_right4
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 9.2, z: 0, Z: -1.57  }
 - id: wardrobe_right5
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 8.3, z: 0, Z: -1.57  }
 
 - id: wardrobe_right6
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 6.9, z: 0, Z: -1.57  }
 - id: wardrobe_right7
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 6, z: 0, Z: -1.57  }
 
 - id: wardrobe_right8
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 4.6, z: 0, Z: -1.57  }
 - id: wardrobe_right9
-  type: wardrobe
+  type: wardrobe_over
   pose: { x: 7.8, y: 3.7, z: 0, Z: -1.57  }
 
 - id: desktable1
-  type: desktable
+  type: desktable_over
   pose: { x: 6.4, y: 12.9, z: 0, Z: -1.57  }
 - id: desktable2
-  type: desktable
+  type: desktable_over
   pose: { x: 6.4, y: 10.6, z: 0, Z: -1.57  }
 - id: desktable3
-  type: desktable
+  type: desktable_over
   pose: { x: 6.4, y: 8.3, z: 0, Z: -1.57  }
 - id: desktable4
-  type: desktable
+  type: desktable_over
   pose: { x: 6.4, y: 6, z: 0, Z: -1.57  }
 - id: desktable5
-  type: desktable
+  type: desktable_over
   pose: { x: 6.4, y: 3.7, z: 0, Z: -1.57  }
 
 - id: roundtable
-  type: circular_table
+  type: circular_table_over
   pose: { x: 3.4, y: 2.5, z: 0, Z: 0  }
+
+- id: misc_items_south
+  shape:
+    group:
+    - box:
+        pose: { x: 4, y: 1.0, z: 1.5 }
+        size: { x: 5.2, y: 1, z: 2.25}
+- id: misc_items_southwest
+  shape:
+    group:
+    - box:
+        pose: { x: 1.2, y: 2.4, z: 1.5 }
+        size: { x: 1.9, y: 1.7, z: 2.25}

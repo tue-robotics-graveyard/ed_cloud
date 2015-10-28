@@ -1,0 +1,8 @@
+shape:
+  group:
+  - box:
+      pose: {x: 0,    y: 0,      z: 0.9}
+      size: {x: 0.9, y: 0.44,   z: 1.80}
+  - box:
+      pose: {x: 0,    y: 0,      z: 2.00}
+      size: {x: 0.8, y: 0.34,   z: 0.5}
