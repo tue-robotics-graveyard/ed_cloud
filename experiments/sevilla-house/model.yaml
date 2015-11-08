@@ -1,0 +1,8 @@
+composition:
+- id: walls
+  shape:
+    heightmap:
+      image: $(file walls_sevilla_house.pgm)
+      height: 3
+      resolution: 0.04
+      pose: { x: 0, y: 0, z: 0 }
