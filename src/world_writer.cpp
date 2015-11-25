@@ -158,7 +158,6 @@ void ed_cloud::write_convex_hull(const ed::MeasurementConvexHull& ch, const std:
     // Write timestamp
     w.writeGroup("timestamp");
     write_timestamp(ch.timestamp, w);
-    w.endGroup();
 
     // Write convex hull itself
     w.writeValue("z_min", ch.convex_hull.z_min);
