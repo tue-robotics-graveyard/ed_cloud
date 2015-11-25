@@ -176,7 +176,7 @@ void HypertableWriterPlugin::add_shapes(std::vector<Hypertable::ThriftGen::CellA
         ed::io::JSONWriter wr(str);
         ed_cloud::write_publisher(ros::this_node::getName(), wr);
         ed_cloud::write_shape((*it->second).getMesh(), wr);
-        wr.endGroup();
+//        wr.endGroup();
         cell_as_array.push_back(str.str());
 
 
@@ -199,7 +199,7 @@ void HypertableWriterPlugin::add_convex_hulls(std::vector<Hypertable::ThriftGen:
         ed::io::JSONWriter wr(str);
         ed_cloud::write_publisher(ros::this_node::getName(), wr);
         ed_cloud::write_convex_hull_map(convex_hull_map, wr);
-        wr.endGroup();
+//        wr.endGroup();
         cell_as_array.push_back(str.str());
         cells_as_arrays.push_back(cell_as_array);
     }
@@ -219,7 +219,7 @@ void HypertableWriterPlugin::add_type(std::vector<Hypertable::ThriftGen::CellAsA
         ed::io::JSONWriter wr(str);
         ed_cloud::write_publisher(ros::this_node::getName(), wr);
         ed_cloud::write_type(it->second.c_str(), wr);
-        wr.endGroup();
+//        wr.endGroup();
         cell_as_array.push_back(str.str());
         cells_as_arrays.push_back(cell_as_array);
 
@@ -239,7 +239,7 @@ void HypertableWriterPlugin::add_removed_entities(std::vector<Hypertable::Thrift
         cell_as_array.push_back("");
         ed::io::JSONWriter wr(str);
         ed_cloud::write_publisher(ros::this_node::getName(), wr);
-        wr.endGroup();
+//        wr.endGroup();
         cell_as_array.push_back(str.str());
         cells_as_arrays.push_back(cell_as_array);
     }
@@ -259,7 +259,7 @@ void HypertableWriterPlugin::add_poses(std::vector<Hypertable::ThriftGen::CellAs
         ed::io::JSONWriter wr(str);
         ed_cloud::write_publisher(ros::this_node::getName(), wr);
         ed_cloud::write_pose(it->second, wr);
-        wr.endGroup();
+//        wr.endGroup();
         cell_as_array.push_back(str.str());
         cells_as_arrays.push_back(cell_as_array);
 

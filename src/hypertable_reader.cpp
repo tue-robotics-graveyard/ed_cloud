@@ -18,10 +18,10 @@ HypertableReaderPlugin::HypertableReaderPlugin()
 }
 
 HypertableReaderPlugin::~HypertableReaderPlugin() {
-    std::cout << "Writing file" << std::endl;
-    std::ofstream ofile("output-client-0.json");
-    ofile << world_text;
-    ofile.close();
+//    std::cout << "Writing file" << std::endl;
+//    std::ofstream ofile("output-client-0.json");
+//    ofile << world_text;
+//    ofile.close();
 }
 
 void HypertableReaderPlugin::initialize(ed::InitData& init) {
@@ -68,10 +68,10 @@ void HypertableReaderPlugin::initialize(ed::InitData& init) {
 
 void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequest& req) {
 
-    std::stringstream ofile;
-    ed::io::JSONWriter writer(ofile);
-    ed_cloud::world_write(data.world, 0, writer);
-    world_text = ofile.str();
+//    std::stringstream ofile;
+//    ed::io::JSONWriter writer(ofile);
+//    ed_cloud::world_write(data.world, 0, writer);
+//    world_text = ofile.str();
 
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);

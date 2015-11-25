@@ -8,7 +8,7 @@ plugins:
   - name: intruder_detector
     lib: libed_intruder_detection_plugin.so
   - name: hypertable_writer_plugin
-    enabled: 0
+    enabled: 1
     lib: libed_hypertable_writer_plugin.so
     parameters:
         address: db.docker.wambacloud.com
@@ -18,9 +18,10 @@ plugins:
         write:
           - property: pose
           - property: type
-    frequency: 1
+          - property: convex_hull
+    frequency: 5
   - name: hypertable_reader_plugin
-    enabled: 0
+    enabled: 1
     lib: libed_hypertable_reader_plugin.so
     parameters:
         address: db.docker.wambacloud.com
@@ -29,7 +30,8 @@ plugins:
         read:
           - property: pose
           - property: type
-    frequency: 1
+          - property: convex_hull
+    frequency: 5
   - name: perception
     lib: libed_perception_plugin.so    
     parameters:
