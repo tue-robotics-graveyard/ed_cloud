@@ -18,8 +18,9 @@ namespace ed_cloud
 
 void read_pose(ed::io::Reader& r, geo::Pose3D& pose)
 {
-    if (!r.readGroup("pose"))
+    if (!r.readGroup("pose")) {
         return;
+    }
 
     r.readValue("pos.x", pose.t.x);
     r.readValue("pos.y", pose.t.y);
@@ -120,12 +121,11 @@ void read_convex_hull(ed::io::Reader& r, ed::MeasurementConvexHull& ch, std::str
         r.endArray();
     }
 
-    r.endGroup();
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void read_publisher(ed::io::Reader &r, std::string publisher)
+void read_publisher(ed::io::Reader &r, std::string& publisher)
 {
     r.readValue("publisher", publisher);
 }

@@ -16,7 +16,7 @@ void read_pose(ed::io::Reader& r, geo::Pose3D& pose);
 void read_timestamp(ed::io::Reader& r, double& timestamp);
 void read_shape(ed::io::Reader& r, geo::Mesh& mesh);
 void read_convex_hull(ed::io::Reader& r, ed::MeasurementConvexHull& ch, std::string& source_id);
-void read_publisher(ed::io::Reader& r, std::string publisher);
+void read_publisher(ed::io::Reader& r, std::string &publisher);
 void read_type(ed::io::Reader& r, ed::TYPE& type);
 
 // Binary

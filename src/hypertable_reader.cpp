@@ -153,7 +153,8 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
 void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArray &cell, ed::UpdateRequest &req)
 {
     ed::UUID entity_id = cell[0];
-    ed::io::JSONReader reader(cell[3].c_str());
+    std::string elem = cell[3] + "}";
+    ed::io::JSONReader reader(elem.c_str());
 
     if (cell[1] == ed_hypertable::POSE_CELL) {
         geo::Pose3D pose;
@@ -166,10 +167,16 @@ void HypertableReaderPlugin::add_to_world_model(Hypertable::ThriftGen::CellAsArr
         shape->setMesh(mesh);
         req.setShape(entity_id, shape);
     }  else if (cell[1] == ed_hypertable::CONVEX_HULL_CELL) {
-        std::string source_id;
-        ed::MeasurementConvexHull ch;
-        ed_cloud::read_convex_hull(reader, ch, source_id);
-        req.setConvexHullNew(entity_id, ch.convex_hull, ch.pose, ch.timestamp, source_id);
+        if (reader.readArray("convex_hulls")) {
+            while(reader.nextArrayItem())
+            {
+                std::string source_id;
+                ed::MeasurementConvexHull ch;
+                ed_cloud::read_convex_hull(reader, ch, source_id);
+                req.setConvexHullNew(entity_id, ch.convex_hull, ch.pose, ch.timestamp, source_id);
+            }
+            reader.endArray();
+        }
     } else if (cell[1] == ed_hypertable::TYPE_CELL) {
         ed::TYPE type;
         ed_cloud::read_type(reader, type);
@@ -187,7 +194,8 @@ void HypertableReaderPlugin::get_cell_publisher(Hypertable::ThriftGen::CellAsArr
         std::istringstream iss(cell[3]);
         ed_cloud::read_publisher_binary(iss, publisher);
      } else {
-        ed::io::JSONReader reader(cell[3].c_str());
+        std::string elem = cell[3] + "}";
+        ed::io::JSONReader reader(elem.c_str());
         ed_cloud::read_publisher(reader, publisher);
     }
 }
