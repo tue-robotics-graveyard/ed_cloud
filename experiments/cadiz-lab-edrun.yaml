@@ -1,10 +1,12 @@
 world:
-  - type: cadiz-lab
+  - type: cadiz-lab-full
     pose: { x: 0, y: 0, z: 0 } 
 
 plugins:
   - name: gui_server
     lib: libed_gui_server_plugin.so
+  - name: intruder_detector
+    lib: libed_intruder_detection_plugin.so
   - name: hypertable_writer_plugin
     enabled: 0
     lib: libed_hypertable_writer_plugin.so
@@ -28,10 +30,29 @@ plugins:
           - property: pose
           - property: type
     frequency: 1
-  - name: kinect_integration
+  - name: kinect_integration1
     lib: libed_kinect_diff_plugin.so
     enabled: 1 
     parameters:
-       topic: /rgbd
+       topic: /kinect1/rgbd
+       frame-id: kinect1
+       clear_entities: 1
+       min_distance_sq: 2000
+  - name: kinect_integration2
+    lib: libed_kinect_diff_plugin.so
+    enabled: 1 
+    parameters:
+       topic: /kinect2/rgbd
+       frame-id: kinect2
+       clear_entities: 1
+       min_distance_sq: 2000
   - name: perception
     lib: libed_perception_plugin.so    
+    parameters:
+        modules:
+        - lib: libcolor_matcher.so
+          parameters:
+              debug_mode: 1                     # activate debug mode for extra output
+              debug_folder: /tmp/color_matcher/ # folder for debug output images
+              color_table: color_names.txt     # location of database (ed_object_models/configs/color_matcher + <this path>)
+              type_unknown_score: 0.05           # default score for an unknown entity
