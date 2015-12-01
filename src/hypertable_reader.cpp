@@ -130,6 +130,10 @@ void HypertableReaderPlugin::process_cells(std::vector<Hypertable::ThriftGen::Ce
 
         get_cell_publisher(cell, publisher);
 
+        if (deleted_entities.find(cell[0]) != deleted_entities.end()) {
+            std::cout << "INFO ABOUT REMOVED ENTITY " << cell[0] << std::endl;
+        }
+
         if (publisher == ros::this_node::getName() ||
                 (current_entity == cell[0] && entity_removed)
                 || deleted_entities.find(cell[0]) != deleted_entities.end()) {

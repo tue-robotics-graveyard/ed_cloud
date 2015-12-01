@@ -32,5 +32,5 @@ plugins:
        frame-id: kinect1
        clear_entities: 1
        min_distance_sq: 2000
-       border_x: 10
-       border_y: 10
+       border_x: 50
+       border_y: 50
