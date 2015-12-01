@@ -1,10 +1,6 @@
-world:
-  - type: cadiz-lab-full
-    pose: { x: 0, y: 0, z: 0 } 
-
 plugins:
   - name: hypertable_writer_plugin
-    enabled: 0
+    enabled: 1
     lib: libed_hypertable_writer_plugin.so
     parameters:
         address: db.docker.wambacloud.com
@@ -14,9 +10,10 @@ plugins:
         write:
           - property: pose
           - property: type
-    frequency: 1
+          - property: convex_hull
+    frequency: 5
   - name: hypertable_reader_plugin
-    enabled: 0
+    enabled: 1
     lib: libed_hypertable_reader_plugin.so
     parameters:
         address: db.docker.wambacloud.com
@@ -25,7 +22,8 @@ plugins:
         read:
           - property: pose
           - property: type
-    frequency: 1
+          - property: convex_hull
+    frequency: 5
   - name: kinect_integration1
     lib: libed_kinect_diff_plugin.so
     enabled: 1 
@@ -34,3 +32,5 @@ plugins:
        frame-id: kinect1
        clear_entities: 1
        min_distance_sq: 2000
+       border_x: 50
+       border_y: 50
