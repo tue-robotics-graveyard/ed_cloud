@@ -32,6 +32,7 @@ plugins:
        num_cubes: $(env NUM_ELEMENTS)
        ns: r
        stop: $(env NUMOPERATIONS)
+       die: $(env DIEOPERATIONS)	
        measurement_width: 4
        measurement_height: 4
   frequency: $(env FREQUENCY)
