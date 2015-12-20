@@ -38,6 +38,7 @@ private:
     int num_cubes_;
     std::string ns;
     int stop;
+    int die;
     int measurement_width, measurement_height;
 };
 

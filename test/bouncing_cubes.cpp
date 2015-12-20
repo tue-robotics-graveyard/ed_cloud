@@ -31,6 +31,7 @@ void BouncingCubes::configure(tue::Configuration config)
     config.value("num_cubes", num_cubes_);
     config.value("ns", ns);
     config.value("stop", stop);
+    config.value("die", die);
     config.value("measurement_width", measurement_width);
     config.value("measurement_height", measurement_height);
 
@@ -46,6 +47,10 @@ void BouncingCubes::initialize()
 
 void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
+    if (die == 0) {
+        exit(0);
+    }
+
     if (stop == 0) {
         return;
     }
@@ -211,6 +216,10 @@ void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 
     if (stop > 0) {
         stop--;
+    }
+
+    if (die > 0) {
+        die--;
     }
 
 }
