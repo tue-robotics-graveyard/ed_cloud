@@ -31,12 +31,15 @@ void HypertableReaderPlugin::initialize(ed::InitData& init) {
     init.config.value("address", db_address);
     init.config.value("port", db_port);
     init.config.value("namespace", db_namespace);
+    init.config.value("profile", profile);
+
     get_measurements = false;
 
     elements_to_read.insert(ed_hypertable::DELETED_CELL);
 
     std::stringstream select_columns_aux;
     select_columns_aux <<  ed_hypertable::DELETED_CELL;
+
 
     if (init.config.readArray("read"))
     {
@@ -75,11 +78,18 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
 
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
+        ros::Time query_timestamp = ros::Time::now();
 
         query_cloud_world_model(ns, select_columns,
                                 ed_hypertable::ENTITY_TABLE_NAME,
                                 max_timestamp_queried_entities, req);
 
+        if (profile) {
+            ros::Duration t = ros::Time::now() - query_timestamp;
+            std::cout << std::fixed << " t_{read} = "
+                      << std::fixed << std::setprecision(6)
+                      << t.toSec() << std::endl;
+        }
 
         if (get_measurements) {
             query_cloud_world_model(ns, ed_hypertable::MEASUREMENT_CELL,

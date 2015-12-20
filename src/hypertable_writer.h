@@ -47,6 +47,7 @@ private:
     Hypertable::Thrift::Client *client;
     int64_t total_elements;
     int stop;
+    bool profile;
     std::set<std::string> elements_to_write;
 };
 

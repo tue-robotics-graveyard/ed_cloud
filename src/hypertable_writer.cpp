@@ -25,6 +25,7 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
     init.config.value("port", db_port);
     init.config.value("namespace", db_namespace);
     init.config.value("stop", stop);
+    init.config.value("profile", profile);
 
     elements_to_write.insert(ed_hypertable::DELETED_CELL);
     if (init.config.readArray("write"))
@@ -138,12 +139,24 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
         }
 
         if (!cells_as_arrays.empty()) {
+            ros::Time query_timestamp = ros::Time::now();
+
             total_elements+=cells_as_arrays.size();
 
-            ROS_INFO_STREAM("Publishing " << cells_as_arrays.size() << " Elements, "
-                            << "Total = " << total_elements);
+            //ROS_INFO_STREAM("Publishing " << cells_as_arrays.size() << " Elements, "
+            //                << "Total = " << total_elements);
+
+
+
             client->set_cells_as_arrays(ns, ed_hypertable::ENTITY_TABLE_NAME,
                                         cells_as_arrays);
+            if (profile) {
+                ros::Duration t = ros::Time::now() - query_timestamp;
+                std::cout << std::fixed << " t_{write} = "
+                          << std::fixed << std::setprecision(6)
+                          << t.toSec() << std::endl;
+            }
+
         }
 
         client->namespace_close(ns);

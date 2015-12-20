@@ -3,7 +3,7 @@ plugins:
     enabled: 1
     lib: libed_hypertable_writer_plugin.so
     parameters:
-        address: db.docker.wambacloud.com
+        address: worldmodel.internal.wambacloud.com
         port: 15867
         namespace: test
         stop: 10000
@@ -16,7 +16,7 @@ plugins:
     enabled: 1
     lib: libed_hypertable_reader_plugin.so
     parameters:
-        address: db.docker.wambacloud.com
+        address: worldmodel.internal.wambacloud.com
         port: 15867
         namespace: test
         read:
