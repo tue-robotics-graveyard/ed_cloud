@@ -4,9 +4,9 @@ export NODENAME=$1
 export DB_ADDRESS=db${1}.internal.wambacloud.com
 
 
-for AUX_NUM_OPERATIONS in 1024; do
-	for AUX_NUM_ELEMENTS in 16 32 64 128 256 512 1024 2048; do
-		for AUX_FREQUENCY in 5 10; do
+for AUX_NUM_OPERATIONS in 512; do
+	for AUX_NUM_ELEMENTS in 1 16 32 64 128 256 512 1024 2048; do
+		for AUX_FREQUENCY in 1 5 10 20; do
 			for ((i=0; i < $2; i++))
 			do
 				export NUM_OPERATIONS=$AUX_NUM_OPERATIONS
@@ -61,7 +61,7 @@ plugins:
   frequency: $FREQUENCY
 EOF
 				echo "Executing for NUM_OPERATIONS=$NUM_OPERATIONS NUM_ELEMENTS=$NUM_ELEMENTS FREQUENCY=$FREQUENCY"
-				LD_LIBRARY_PATH=/opt/hypertable/current/lib/:$LD_LIBRARY_PATH /home/ubuntu/ros/indigo/system/devel/lib/ed/ed profile-query-temp.yaml  _name:=$1 | tee test-${NODENAME}-${NUM_OPERATIONS}o-${NUM_ELEMENTS}e-${FREQUENCY}hz-a$i.txt
+				LD_LIBRARY_PATH=/opt/hypertable/current/lib/:$LD_LIBRARY_PATH timeout 120 /home/ubuntu/ros/indigo/system/devel/lib/ed/ed profile-query-temp.yaml  _name:=$1 | tee test-${NODENAME}-${NUM_OPERATIONS}o-${NUM_ELEMENTS}e-${FREQUENCY}hz-a$i.txt
 				scp *.txt centos@lemarq.wambacluster.com:/home/centos/res/${NODES}node/
 				rm *.txt
 				
