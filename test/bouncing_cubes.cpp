@@ -47,11 +47,12 @@ void BouncingCubes::initialize()
 
 void BouncingCubes::process(const ed::WorldModel &world, ed::UpdateRequest &req)
 {
-    if (die == 0) {
+    if (die <= 0) {
         exit(0);
     }
 
     if (stop == 0) {
+	die--;
         return;
     }
 

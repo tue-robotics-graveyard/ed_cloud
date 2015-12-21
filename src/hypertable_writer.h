@@ -48,6 +48,7 @@ private:
     int64_t total_elements;
     int stop;
     bool profile;
+    bool drop_table;
     std::set<std::string> elements_to_write;
 };
 

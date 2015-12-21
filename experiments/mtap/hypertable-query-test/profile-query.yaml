@@ -1,40 +1,43 @@
 externals:
-- name: $(env NODENAME)
+- name: $NODENAME
 plugins:
 - name: hypertable_writer_plugin
   lib: libed_hypertable_writer_plugin.so
   parameters:
-      address: $(env DB_ADDRESS)
+      address: $DB_ADDRESS
       port: 15867
+      stop: $NUM_OPERATIONS
       namespace: test
-      stop: $(env NUM_OPERATIONS)
-      profile: true
+      stop: -1
+      profile: 1
       write:
         - property: shape
         - property: pose
         - property: convex_hull
         - property: type
-  frequency: $(env FREQUENCY)
+  frequency: $FREQUENCY
 - name: hypertable_reader_plugin
   lib: libed_hypertable_reader_plugin.so
   parameters:
-      address: $(env DB_ADDRESS)
+      address: $DB_ADDRESS
       port: 15867
       namespace: test
-      profile: true
+      stop: $NUM_OPERATIONS
+      profile: 1
+      stop: -1
       read:
         - property: shape
         - property: pose
         - property: convex_hull
         - property: type
-  frequency: $(ENV FREQUENCY)
+  frequency: $FREQUENCY
 - name: bouncing_cubes
   lib: libed_bouncing_cubes.so
   parameters:
-       num_cubes: $(env NUM_ELEMENTS)
+       num_cubes: $NUM_ELEMENTS
        ns: r
-       stop: $(env NUMOPERATIONS)
-       die: $(env DIEOPERATIONS)	
+       stop: $NUM_OPERATIONS
+       die: $DIE_OPERATIONS
        measurement_width: 4
        measurement_height: 4
-  frequency: $(env FREQUENCY)
+  frequency: $FREQUENCY

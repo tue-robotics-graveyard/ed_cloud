@@ -78,18 +78,10 @@ void HypertableReaderPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
 
     try {
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
-        ros::Time query_timestamp = ros::Time::now();
 
         query_cloud_world_model(ns, select_columns,
                                 ed_hypertable::ENTITY_TABLE_NAME,
                                 max_timestamp_queried_entities, req);
-
-        if (profile) {
-            ros::Duration t = ros::Time::now() - query_timestamp;
-            std::cout << std::fixed << " t_{read} = "
-                      << std::fixed << std::setprecision(6)
-                      << t.toSec() << std::endl;
-        }
 
         if (get_measurements) {
             query_cloud_world_model(ns, ed_hypertable::MEASUREMENT_CELL,
@@ -229,9 +221,22 @@ void HypertableReaderPlugin::query_cloud_world_model(const Hypertable::ThriftGen
 
     Hypertable::ThriftGen::HqlResultAsArrays result_as_arrays;
 
+    ros::Time query_timestamp = ros::Time::now();
+
     client->hql_query_as_arrays(result_as_arrays, ns, query.str());
 
     if (!result_as_arrays.cells.empty()) {
+
+	if (profile) {
+            ros::Duration t = ros::Time::now() - query_timestamp;
+            std::cout << std::fixed << " t_{read} = "
+                      << std::fixed << std::setprecision(6)
+                      << t.toSec() << " size = " << result_as_arrays.cells.size() << 
+		      " t_{read,elem} = " << t.toSec()/result_as_arrays.cells.size() 
+		      << std::endl;
+        }
+
+
         total_elements+=result_as_arrays.cells.size();
         ROS_INFO_STREAM("New data! " << result_as_arrays.cells.size()
                         << " Elements, Total " << total_elements);

@@ -26,6 +26,7 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
     init.config.value("namespace", db_namespace);
     init.config.value("stop", stop);
     init.config.value("profile", profile);
+    init.config.value("drop_table", drop_table);
 
     elements_to_write.insert(ed_hypertable::DELETED_CELL);
     if (init.config.readArray("write"))
@@ -48,6 +49,11 @@ void HypertableWriterPlugin::initialize(ed::InitData& init) {
         }
 
         Hypertable::ThriftGen::Namespace ns = client->namespace_open(db_namespace);
+
+        if (drop_table) { 
+            client->table_drop(ns, ed_hypertable::ENTITY_TABLE_NAME, true);
+        }
+
         if (!client->table_exists(ns, ed_hypertable::ENTITY_TABLE_NAME)){
             client->table_drop(ns, ed_hypertable::ENTITY_TABLE_NAME, true);
 
@@ -154,7 +160,8 @@ void HypertableWriterPlugin::process(const ed::PluginInput& data, ed::UpdateRequ
                 ros::Duration t = ros::Time::now() - query_timestamp;
                 std::cout << std::fixed << " t_{write} = "
                           << std::fixed << std::setprecision(6)
-                          << t.toSec() << std::endl;
+                          << t.toSec() << " " << "size = "  << cells_as_arrays.size() 
+			  << " t_{write,elem} = " << t.toSec()/cells_as_arrays.size() <<  std::endl;
             }
 
         }
