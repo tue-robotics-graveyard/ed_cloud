@@ -4,7 +4,7 @@ export NODENAME=$1
 export DB_ADDRESS=db${1}.internal.wambacloud.com
 
 
-for AUX_NUM_OPERATIONS in 32; do
+for AUX_NUM_OPERATIONS in 1024; do
 	for AUX_NUM_ELEMENTS in 16 32 64 128 256 512 1024 2048; do
 		for AUX_FREQUENCY in 5 10; do
 			for ((i=0; i < $2; i++))
@@ -68,3 +68,4 @@ EOF
 done
 
 rm profile-query-temp.yaml
+scp *.txt centos@lemarq.wambacluster.com:/home/centos/
