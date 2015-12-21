@@ -61,7 +61,7 @@ plugins:
   frequency: $FREQUENCY
 EOF
 				echo "Executing for NUM_OPERATIONS=$NUM_OPERATIONS NUM_ELEMENTS=$NUM_ELEMENTS FREQUENCY=$FREQUENCY"
-				LD_LIBRARY_PATH=/opt/hypertable/current/lib/:$LD_LIBRARY_PATH $TUE_ENV_DIR/system/devel/lib/ed/ed profile-query-temp.yaml  _name:=$1 | tee test-${NODENAME}-${NUM_OPERATIONS}o-${NUM_ELEMENTS}e-${FREQUENCY}hz-a$i.txt
+				LD_LIBRARY_PATH=/opt/hypertable/current/lib/:$LD_LIBRARY_PATH /home/ubuntu/ros/indigo/system/devel/lib/ed/ed profile-query-temp.yaml  _name:=$1 | tee test-${NODENAME}-${NUM_OPERATIONS}o-${NUM_ELEMENTS}e-${FREQUENCY}hz-a$i.txt
 			done
 		done
 	done
