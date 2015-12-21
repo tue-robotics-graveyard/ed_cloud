@@ -4,10 +4,11 @@ plugins:
 - name: hypertable_writer_plugin
   lib: libed_hypertable_writer_plugin.so
   parameters:
-      address: worldmodel.internal.wambacloud.com
+      address: $(env DB_ADDRESS)
       port: 15867
       namespace: test
       stop: $(env NUM_OPERATIONS)
+      profile: true
       write:
         - property: shape
         - property: pose
@@ -17,9 +18,10 @@ plugins:
 - name: hypertable_reader_plugin
   lib: libed_hypertable_reader_plugin.so
   parameters:
-      address: worldmodel.internal.wambacloud.com
+      address: $(env DB_ADDRESS)
       port: 15867
       namespace: test
+      profile: true
       read:
         - property: shape
         - property: pose
