@@ -62,7 +62,7 @@ plugins:
 EOF
 				echo "Executing for NUM_OPERATIONS=$NUM_OPERATIONS NUM_ELEMENTS=$NUM_ELEMENTS FREQUENCY=$FREQUENCY"
 				LD_LIBRARY_PATH=/opt/hypertable/current/lib/:$LD_LIBRARY_PATH /home/ubuntu/ros/indigo/system/devel/lib/ed/ed profile-query-temp.yaml  _name:=$1 | tee test-${NODENAME}-${NUM_OPERATIONS}o-${NUM_ELEMENTS}e-${FREQUENCY}hz-a$i.txt
-				scp *.txt centos@lemarq.wambacluster.com:/home/centos/
+				scp *.txt centos@lemarq.wambacluster.com:/home/centos/res/${NODES}node/
 				rm *.txt
 				
 			done
